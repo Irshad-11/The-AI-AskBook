@@ -1,0 +1,508 @@
+{% load static %} {% load markdownify %} {% load static tailwind_tags %}
+
+<!doctype html>
+<html lang="en" class="dark">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Feed | AskBook</title>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    {% tailwind_css %}
+
+    <style>
+      .prose pre { background: #020617; border-radius: 0.75rem; padding: 1rem; overflow-x: auto; }
+      .prose code { background: #020617; padding: 0.25rem 0.4rem; border-radius: 0.4rem; }
+      ::-webkit-scrollbar { width: 8px; }
+      ::-webkit-scrollbar-track { background: #020617; }
+      ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 10px; }
+    </style>
+  </head>
+
+  <body class="bg-[#020617] text-slate-200 font-sans antialiased">
+
+    <!-- ================= MOBILE TOP NAV (Hidden on Desktop) ================= -->
+    <!-- Mobile Header + Profile + Filters (always visible, no toggle) -->
+<div class="lg:hidden sticky top-0 z-40 bg-zinc-900/95 backdrop-blur-md border-b border-zinc-800">
+  <!-- Profile Row -->
+  <div class="px-4 py-2.5 flex items-center justify-between border-b border-zinc-800/40">
+    <!-- Left: Logo + Username -->
+    <div class="flex items-center gap-2">
+      <h1 class="text-lg font-bold text-blue-500 flex items-center gap-1.5">
+        <i data-lucide="WandSparkles" class="w-5 h-5"></i>AskBook
+      </h1>
+      {% if user.is_authenticated %}
+        <div class="flex items-center gap-2 ml-3">
+          <img 
+            src="{% if user.avatar %}{{ user.avatar.url }}{% elif user.avatar_url %}{{ user.avatar_url }}{% else %}https://i.pinimg.com/1200x/2b/87/2b/2b872b6b404b61fba3f2b67569b07801.jpg{% endif %}" 
+            class="w-7 h-7 rounded-full border border-zinc-700 object-cover"
+            alt="{{ user.username }}"
+          />
+          <span class="text-sm font-medium truncate max-w-[140px]">{{ user.username }}</span>
+        </div>
+      {% endif %}
+    </div>
+
+    <!-- Right: Login / Logout -->
+    {% if user.is_authenticated %}
+      <a href="{% url 'logout' %}" class="text-red-400 hover:text-red-300 text-sm font-medium flex items-center gap-1.5">
+        <i data-lucide="log-out" class="w-4 h-4"></i>Logout
+      </a>
+    {% else %}
+      <a href="{% url 'auth' %}?tab=login" class="text-blue-400 hover:text-blue-300 text-sm font-medium">
+        Login
+      </a>
+    {% endif %}
+  </div>
+
+  <!-- Quick Links + Filters Row -->
+  <div class="px-3 py-2.5 bg-zinc-900/60">
+    <div class="horizontal-scroll flex gap-2.5 overflow-x-auto pb-1">
+      <!-- Quick Links -->
+      {% if user.is_authenticated %}
+        <a href="{% url 'user_dashboard' %}" 
+           class="text-xs px-3 py-1.5 bg-zinc-800/70 text-zinc-300 rounded-lg border border-zinc-700 hover:bg-zinc-700 transition flex items-center gap-1.5 flex-shrink-0">
+          <i data-lucide="layout-dashboard" class="w-3.5 h-3.5"></i>Dashboard
+        </a>
+        
+        <a href="{% url 'post_create' %}" 
+           class="text-xs px-3 py-1.5 bg-blue-600/20 text-blue-300 rounded-lg border border-blue-500/30 hover:bg-blue-600/30 transition flex items-center gap-1.5 flex-shrink-0 font-medium">
+          <i data-lucide="plus-circle" class="w-3.5 h-3.5"></i>Create
+        </a>
+        <a href="{% url 'user_posts'%}?tab=favourites" 
+           class="text-xs px-3 py-1.5 bg-pink-600/30 text-pink-300 border-pink-500/50 rounded-lg border hover:bg-pink-500/20 transition flex items-center gap-1.5 flex-shrink-0 font-medium">
+          <i data-lucide="heart-plus" class="w-3.5 h-3.5"></i>Your Favourites
+        </a>
+        
+        <a href="{% url 'user_profile' %}" 
+           class="text-xs px-3 py-1.5 bg-zinc-800/70 text-zinc-300 rounded-lg border border-zinc-700 hover:bg-zinc-700 transition flex items-center gap-1.5 flex-shrink-0">
+          <i data-lucide="user" class="w-3.5 h-3.5"></i>Profile
+        </a>
+        
+      {% endif %}
+
+      
+    </div>
+    <div class="horizontal-scroll flex gap-2 overflow-x-auto pb-1">
+      
+
+      <!-- Popular Filters -->
+      <a href="{% url 'feed' %}?sort=featured" 
+         class="text-xs px-3 py-1.5 rounded-lg border transition flex items-center gap-1.5 flex-shrink-0
+                {% if sort == 'featured' %}bg-purple-600/30 text-purple-300 border-purple-500/50 font-medium{% else %}bg-purple-500/10 text-purple-400 border-purple-500/20 hover:bg-purple-500/20{% endif %}">
+        <i data-lucide="star" class="w-3.5 h-3.5"></i>Featured
+      </a>
+
+      <a href="{% url 'feed' %}?sort=favourites" 
+         class="text-xs px-3 py-1.5 rounded-lg border transition flex items-center gap-1.5 flex-shrink-0
+                {% if sort == 'favourites' %}bg-pink-600/30 text-pink-300 border-pink-500/50 font-medium{% else %}bg-pink-500/10 text-pink-400 border-pink-500/20 hover:bg-pink-500/20{% endif %}">
+        <i data-lucide="heart" class="w-3.5 h-3.5"></i>Favourites
+      </a>
+
+      <a href="{% url 'feed' %}?sort=likes" 
+         class="text-xs px-3 py-1.5 rounded-lg border transition flex items-center gap-1.5 flex-shrink-0
+                {% if sort == 'likes' %}bg-blue-600/30 text-blue-300 border-blue-500/50 font-medium{% else %}bg-blue-500/10 text-blue-400 border-blue-500/20 hover:bg-blue-500/20{% endif %}">
+        <i data-lucide="thumbs-up" class="w-3.5 h-3.5"></i>Liked
+      </a>
+
+      {% if sort %}
+        <a href="{% url 'feed' %}" 
+           class="text-xs px-3 py-1.5 bg-zinc-800/70 text-zinc-300 rounded-lg border border-zinc-700 hover:bg-zinc-700 transition flex items-center gap-1.5 flex-shrink-0">
+          <i data-lucide="circle-off" class="w-3.5 h-3.5"></i>Clear
+        </a>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+    <!-- ================= MAIN CONTENT ================= -->
+    <div class="max-w-[1600px] mx-auto px-3 sm:px-4 lg:px-8">
+      <!-- Desktop Layout: Sidebar + Main (UNCHANGED) -->
+      <div class="hidden lg:grid lg:grid-cols-12 lg:gap-8 lg:py-8">
+        <!-- DESKTOP SIDEBAR (exactly original) -->
+        <aside class="lg:col-span-3 lg:sticky lg:top-0 lg:h-screen py-8 flex flex-col border-r border-zinc-800/50 pr-6">
+          <!-- ... Original desktop sidebar content exactly preserved ... -->
+          <div class="mb-10">
+            <h1 class="text-2xl font-bold text-blue-500 flex items-center gap-2">
+              <i data-lucide="WandSparkles"></i>The AI AskBook
+            </h1>
+          </div>
+          {% if user.is_authenticated %}
+          <div class="bg-zinc-900/50 border border-zinc-800 rounded-xl p-4 mb-8">
+            <div class="flex items-center gap-3 mb-4">
+              <img 
+                src="{% if user.avatar %}{{ user.avatar.url }}{% elif user.avatar_url %}{{ user.avatar_url }}{% else %}https://i.pinimg.com/1200x/2b/87/2b/2b872b6b404b61fba3f2b67569b07801.jpg{% endif %}" 
+                class="w-10 h-10 rounded-full border border-zinc-700 object-cover"
+              />
+              <div class="min-w-0">
+                <p class="font-bold truncate">{{ user.username }}</p>
+                <p class="text-xs text-zinc-500">{{ user.email|truncatechars:20 }}</p>
+              </div>
+            </div>
+            <nav class="space-y-1">
+              <a href="{% url 'user_dashboard' %}" class="flex items-center gap-3 p-2 text-sm hover:bg-zinc-800 rounded-lg transition">
+                <i data-lucide="layout-dashboard" class="w-4 h-4"></i> Dashboard
+              </a>
+              <a href="{% url 'post_create' %}" class="flex items-center gap-3 p-2 text-sm text-blue-400 hover:bg-blue-500/10 rounded-lg transition font-semibold">
+                <i data-lucide="plus-circle" class="w-4 h-4"></i> Create New Post
+              </a>
+              <a href="{% url 'user_profile' %}" class="flex items-center gap-3 p-2 text-sm hover:bg-zinc-800 rounded-lg transition">
+                <i data-lucide="user" class="w-4 h-4"></i> Your Profile
+              </a>
+              <a href="{% url 'user_posts' %}?tab=favourites" class="flex items-center gap-3 p-2 text-sm hover:bg-zinc-800 rounded-lg transition">
+                <i data-lucide="heart" class="w-4 h-4 text-pink-500"></i> Favourites
+              </a>
+              <hr class="border-zinc-800 my-2" />
+              <a href="{% url 'logout' %}" class="flex items-center gap-3 p-2 text-sm text-red-400 hover:bg-red-500/10 rounded-lg transition">
+                <i data-lucide="log-out" class="w-4 h-4"></i> Logout
+              </a>
+            </nav>
+          </div>
+          {% else %}
+          <div class="bg-zinc-900 border border-blue-500/30 rounded-xl p-6 mb-8 text-center">
+            <i data-lucide="lock" class="w-10 h-10 mx-auto mb-3 text-blue-500"></i>
+            <p class="font-bold mb-2">Join the Community</p>
+            <p class="text-xs text-zinc-400 mb-4">Login to create posts and react to others.</p>
+            <a href="{% url 'auth' %}?tab=login" class="block w-full py-2 bg-blue-600 hover:bg-blue-500 rounded-lg text-sm font-bold transition">Login Now</a>
+          </div>
+          {% endif %}
+          <div class="mt-auto pb-8">
+            <p class="text-[10px] font-bold uppercase text-zinc-500 tracking-widest mb-4">Popular Filters</p>
+            <div class="flex flex-col gap-2">
+              <a href="{% url 'feed' %}?sort=featured" class="text-sm px-3 py-2 bg-purple-500/10 text-purple-400 rounded-lg border border-purple-500/20 hover:bg-purple-500/20 transition flex items-center gap-2">
+                <i data-lucide="star" class="w-4 h-4"></i> Featured Posts
+              </a>
+              <a href="{% url 'feed' %}?sort=favourites" class="text-sm px-3 py-2 bg-pink-500/10 text-pink-400 rounded-lg border border-pink-500/20 hover:bg-pink-500/20 transition flex items-center gap-2">
+                <i data-lucide="heart" class="w-4 h-4"></i> Most Favourited
+              </a>
+              <a href="{% url 'feed' %}?sort=likes" class="text-sm px-3 py-2 bg-blue-500/10 text-blue-400 rounded-lg border border-blue-500/20 hover:bg-blue-500/20 transition flex items-center gap-2">
+                <i data-lucide="thumbs-up" class="w-4 h-4"></i> Most Liked
+              </a>
+              <a href="{% url 'feed' %}" class="text-sm px-3 py-2 bg-gray-500/10 text-blue-400 rounded-lg border border-blue-500/20 hover:bg-blue-500/20 transition flex items-center gap-2">
+                <i data-lucide="circle-off" class="w-4 h-4"></i> RESET FILTER
+              </a>
+            </div>
+          </div>
+        </aside>
+
+        <!-- DESKTOP MAIN (exactly original) -->
+        <main class="lg:col-span-9 py-8">
+          <div class="mb-10">
+            <form method="GET" action="{% url 'feed' %}" class="flex flex-col md:flex-row gap-4">
+              <div class="relative flex-1">
+                <i data-lucide="search" class="absolute left-4 top-7 -translate-y-1/2 w-5 h-5 text-zinc-500"></i>
+                <input type="text" name="q" value="{{ query }}" placeholder="Search titles, summaries or tags..." class="w-full bg-zinc-900 border border-zinc-800 rounded-xl py-3 pl-12 pr-4 focus:ring-2 focus:ring-blue-500 outline-none transition">
+              </div>
+              <select name="difficulty" onchange="this.form.submit()" class="bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 outline-none text-zinc-300">
+                <option value="">All Difficulties</option>
+                <option value="BEGINNER" {% if difficulty == 'BEGINNER' %}selected{% endif %}>Beginner</option>
+                <option value="INTERMEDIATE" {% if difficulty == 'INTERMEDIATE' %}selected{% endif %}>Intermediate</option>
+                <option value="ADVANCED" {% if difficulty == 'ADVANCED' %}selected{% endif %}>Advanced</option>
+              </select>
+              {% if query or difficulty %}
+                <a href="{% url 'feed' %}" class="px-4 py-3 bg-zinc-800 rounded-xl text-zinc-400 hover:text-white flex items-center justify-center">
+                  <i data-lucide="refresh-ccw" class="w-5 h-5"></i>
+                </a>
+              {% endif %}
+            </form>
+          </div>
+
+          {% if posts %}
+          {% for post in posts %}
+          <div class="bg-zinc-950 border border-zinc-800 rounded-sm p-6 shadow-xl font-sans mb-6">
+            <!-- Original desktop post layout preserved -->
+            <div class="flex justify-between items-start mb-4">
+              <div class="flex-1 min-w-0 pr-4">
+                <a href="{% url 'post_detail' post.pk post.slug %}" class="text-4xl font-normal text-zinc-100 hover:text-blue-400 hover:underline truncate block transition-colors">
+                  {{ post.title }}
+                </a>
+              </div>
+              <div class="text-right flex-shrink-0">
+                <p class="text-sm text-zinc-400">{{ post.created_at|timesince }} ago</p>
+                {% if post.updated_at != post.created_at %}
+                  <p class="text-sm italic text-zinc-500">Edited</p>
+                {% endif %}
+              </div>
+            </div>
+            <div class="mb-6">
+              <a href="{% url 'post_detail' post.pk post.slug %}" class="text-lg text-zinc-300 leading-relaxed block hover:text-zinc-100 transition-colors">
+                {{ post.summary|truncatewords:150 }}
+              </a>
+            </div>
+            <hr class="border-t border-zinc-800 mb-4" />
+            <div class="flex flex-wrap items-center justify-between gap-4 opacity-80 hover:opacity-100">
+              <div class="flex items-center gap-6">
+                <div class="flex items-center gap-3">
+                  <a href="{% url 'public_profile' post.created_by.profile_slug %}">
+                    <img src="{% if post.created_by.avatar %}{{ post.created_by.avatar.url }}{% elif post.created_by.avatar_url %}{{ post.created_by.avatar_url }}{% else %}https://i.pinimg.com/1200x/2b/87/2b/2b872b6b404b61fba3f2b67569b07801.jpg{% endif %}" class="w-12 h-12 rounded-full border border-zinc-700 object-cover">
+                  </a>
+                  <div>
+                    <div class="flex items-center gap-1">
+                      <a href="{% url 'public_profile' post.created_by.profile_slug %}" class="font-medium text-lg text-zinc-100 hover:underline">{{ post.created_by.username }}</a>
+                      {% if post.created_by.is_verified %}
+                        <div class="group relative">
+  <i data-lucide="gem" class="w-4 h-4 text-emerald-400"></i>
+  <span class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover:block bg-green-900 text-white text-xs px-3 py-1.5 rounded-lg border border-zinc-700 shadow-xl whitespace-nowrap">
+    Verified User
+  </span>
+</div>
+                      {% endif %}
+                    </div>
+                    <p class="text-sm text-zinc-500">{{ post.created_by.works_at|default:"Member" }}</p>
+                  </div>
+                </div>
+                <div class="flex gap-2">
+                  {% for post_tag in post.post_tags.all|slice:":5"%}
+                    <span class="px-3 py-1 bg-zinc-900 border border-zinc-700 text-xs rounded-full text-zinc-300">{{ post_tag.tag.name }}</span>
+                  {% endfor %}
+                </div>
+              </div>
+              <div class="flex items-center gap-6">
+                <div class="flex items-center gap-1 text-zinc-400">
+                  <form action="{% url 'post_like' post.id %}" method="POST" class="inline">
+                    {% csrf_token %}
+                    <button type="submit" class="hover:text-blue-500 transition-transform active:scale-90">
+                      <i data-lucide="thumbs-up" class="w-5 h-5 {% if post.user_reaction == 'LIKE' %}fill-current text-blue-500{% endif %}"></i>
+                    </button>
+                  </form>
+                  <span class="text-base tabular-nums">{{ post.likes_count }}</span>
+                </div>
+                <div class="flex items-center gap-1 text-zinc-400">
+                  <form action="{% url 'post_dislike' post.id %}" method="POST" class="inline">
+                    {% csrf_token %}
+                    <button type="submit" class="hover:text-red-500 transition-transform active:scale-90">
+                      <i data-lucide="thumbs-down" class="w-5 h-5 {% if post.user_reaction == 'DISLIKE' %}fill-current text-red-500{% endif %}"></i>
+                    </button>
+                  </form>
+                  <span class="text-base tabular-nums">{{ post.dislikes_count }}</span>
+                </div>
+                <div class="flex items-center gap-1 text-zinc-400">
+                  <form action="{% url 'post_favourite' post.id %}" method="POST" class="inline">
+                    {% csrf_token %}
+                    <button type="submit" class="hover:text-pink-500 transition-transform active:scale-90">
+                      {% if post.is_favourited_by_user %}
+                        <i data-lucide="heart" class="w-5 h-5 text-pink-500 fill-current"></i>
+                      {% else %}
+                        <i data-lucide="heart-plus" class="w-5 h-5"></i>
+                      {% endif %}
+                    </button>
+                  </form>
+                  <span class="text-base tabular-nums">{{ post.favourited_by.count }}</span>
+                </div>
+                {% if user.is_staff %}
+                <form action="{% url 'make_featured' post.id %}" method="POST" class="ml-2">
+                  {% csrf_token %}
+                  <button type="submit" class="hover:scale-110 transition-transform">
+                    <i data-lucide="pin" class="w-7 h-7 text-yellow-500 rotate-[24deg] {% if post.is_featured %}fill-current{% endif %}"></i>
+                  </button>
+                </form>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+          {% else %}
+          <div class="text-center py-20 bg-zinc-900/30 border border-zinc-800 rounded-xl">
+            <i data-lucide="frown" class="w-12 h-12 mx-auto mb-4 text-zinc-600"></i>
+            <p class="text-zinc-500">No approved posts match your search or filters.</p>
+          </div>
+          {% endif %}
+        </main>
+      </div>
+
+      <!-- ================= MOBILE POSTS ONLY ================= -->
+      <div class="lg:hidden">
+        <!-- Mobile Search (Fixed position, proper spacing) -->
+        <!-- Mobile Search (Fixed position, proper spacing) -->
+<div class=" w-full bg-zinc-950/95 backdrop-blur-md border-b border-zinc-800 lg:border lg:border-zinc-800 lg:rounded-2xl lg:shadow-2xl lg:mx-4 lg:mt-6 lg:mb-6 lg:max-w-3xl lg:mx-auto">
+  <div class="px-4 py-3 lg:p-4">
+    <form method="GET" action="{% url 'feed' %}" class="flex flex-col sm:flex-row sm:items-end gap-3 lg:gap-4">
+      <!-- Search Input + Button -->
+      <div class="relative flex-1 flex items-center gap-2">
+        <div class="flex-1 relative">
+          <i data-lucide="search" class="absolute left-3 top-7 -translate-y-1/2 w-4 h-4 sm:w-5 sm:h-5 text-zinc-500 pointer-events-none"></i>
+          <input 
+            type="text" 
+            name="q" 
+            value="{{ query }}"
+            placeholder="Search keywords..." 
+            class="w-full bg-zinc-900 border border-zinc-700 rounded-xl py-2.5 sm:py-3 pl-10 sm:pl-11 pr-4 text-sm sm:text-base focus:ring-2 focus:ring-blue-500 outline-none transition placeholder:text-zinc-500"
+          >
+        </div>
+        <!-- Visible Search/Enter Button -->
+        <button 
+          type="submit"
+          class="p-2.5 sm:p-3 bg-blue-600/20 hover:bg-blue-600/30 border border-blue-500/30 rounded-xl transition flex items-center justify-center"
+          aria-label="Search"
+        >
+          <i data-lucide="search" class="w-5 h-5 sm:w-6 sm:h-6 text-blue-400"></i>
+        </button>
+      </div>
+
+      <!-- Difficulty Select -->
+      <select 
+        name="difficulty" 
+        onchange="this.form.submit()" 
+        class="bg-zinc-900 border border-zinc-700 rounded-xl px-4 py-2.5 sm:py-3 text-sm sm:text-base text-zinc-300 w-full sm:w-auto sm:min-w-[160px] outline-none transition"
+      >
+        <option value="">All Levels</option>
+        <option value="BEGINNER" {% if difficulty == 'BEGINNER' %}selected{% endif %}>Beginner</option>
+        <option value="INTERMEDIATE" {% if difficulty == 'INTERMEDIATE' %}selected{% endif %}>Intermediate</option>
+        <option value="ADVANCED" {% if difficulty == 'ADVANCED' %}selected{% endif %}>Advanced</option>
+      </select>
+
+      <!-- Clear Filters (only show if active) -->
+      {% if query or difficulty %}
+        <a href="{% url 'feed' %}" 
+           class="flex items-center justify-center px-4 py-2.5 sm:py-3 bg-zinc-800 hover:bg-zinc-700 text-zinc-400 hover:text-white rounded-xl transition text-sm sm:text-base">
+          <i data-lucide="refresh-ccw" class="w-4 h-4 sm:w-5 sm:h-5"></i>
+        </a>
+      {% endif %}
+    </form>
+  </div>
+</div>
+
+        <!-- FIXED Mobile Post Cards - No more zoom needed! -->
+        <div class="px-4 space-y-4 sm:space-y-6">
+          {% if posts %}
+          {% for post in posts %}
+          <div class="bg-zinc-950/95 backdrop-blur-sm border border-zinc-800 rounded-2xl p-4 sm:p-6 shadow-xl hover:shadow-2xl hover:border-zinc-700 transition-all duration-200">
+            
+            <!-- Mobile Title + Time -->
+            <div class="flex flex-col gap-2 mb-4">
+              <a href="{% url 'post_detail' post.pk post.slug %}" 
+                 class="text-lg sm:text-xl font-bold leading-tight text-white hover:text-blue-400 hover:underline transition-all line-clamp-2">
+                {{ post.title }}
+              </a>
+              <div class="flex items-center gap-2 text-xs sm:text-sm text-zinc-400">
+                <span>{{ post.created_at|timesince }} ago</span>
+                {% if post.updated_at != post.created_at %}
+                  <span class="italic text-zinc-500">• Edited</span>
+                {% endif %}
+              </div>
+            </div>
+
+            <!-- Mobile Summary -->
+            <div class="mb-5">
+              <a href="{% url 'post_detail' post.pk post.slug %}" class="block text-sm sm:text-base text-zinc-200 leading-relaxed hover:text-white transition-colors line-clamp-3">
+                {{ post.summary|truncatewords:120 }}
+              </a>
+            </div>
+
+            <hr class="border-zinc-800 mb-4" />
+
+            <!-- Mobile Author Row -->
+            <div class="flex items-start gap-3 mb-4">
+              <a href="{% url 'public_profile' post.created_by.profile_slug %}" class="flex-shrink-0">
+                <img
+                  src="{% if post.created_by.avatar %}{{ post.created_by.avatar.url }}{% elif post.created_by.avatar_url %}{{ post.created_by.avatar_url }}{% else %}https://i.pinimg.com/1200x/2b/87/2b/2b872b6b404b61fba3f2b67569b07801.jpg{% endif %}"
+                  class="w-12 h-12 sm:w-14 sm:h-14 rounded-full border-2 border-zinc-700 object-cover"
+                />
+              </a>
+              <div class="min-w-0 flex-1">
+                <div class="flex items-center gap-2 mb-1">
+                  <a href="{% url 'public_profile' post.created_by.profile_slug %}" class="font-semibold text-sm sm:text-base text-white truncate hover:underline">
+                    {{ post.created_by.username }}
+                  </a>
+                  {% if post.created_by.is_verified %}
+                    <i data-lucide="gem" class="w-4 h-4 text-emerald-500 flex-shrink-0"></i>
+                  {% endif %}
+                </div>
+                <p class="text-xs sm:text-sm text-zinc-500">{{ post.created_by.works_at|default:"Member" }}</p>
+              </div>
+            </div>
+
+            <!-- Mobile Tags -->
+            {% if post.post_tags.all %}
+            <div class="flex flex-wrap gap-2 mb-4">
+              {% for post_tag in post.post_tags.all|slice:":3" %}
+                <span class="px-2.5 py-1.5 bg-zinc-900/80 border border-zinc-700 text-xs rounded-full text-zinc-300 hover:bg-zinc-800 transition">
+                  {{ post_tag.tag.name }}
+                </span>
+              {% endfor %}
+            </div>
+            {% endif %}
+
+            <!-- Mobile Reactions (Perfect spacing) -->
+            <div class="flex items-center justify-between gap-3 pt-1">
+              <div class="flex items-center gap-4">
+                <!-- Like -->
+                <div class="flex items-center gap-1.5 text-zinc-400 hover:text-blue-400 p-2 -m-2 rounded-xl hover:bg-zinc-900/50 transition-all">
+                  <form action="{% url 'post_like' post.id %}" method="POST" class="inline">
+                    {% csrf_token %}
+                    <button type="submit" class="p-2 hover:scale-110 active:scale-95 transition-transform">
+                      <i data-lucide="thumbs-up" class="w-5 h-5 sm:w-6 sm:h-6 {% if post.user_reaction == 'LIKE' %}fill-current text-blue-500{% endif %}"></i>
+                    </button>
+                  </form>
+                  <span class="text-sm font-mono tabular-nums min-w-[2rem]">{{ post.likes_count }}</span>
+                </div>
+
+                <!-- Dislike -->
+                <div class="flex items-center gap-1.5 text-zinc-400 hover:text-red-400 p-2 -m-2 rounded-xl hover:bg-zinc-900/50 transition-all">
+                  <form action="{% url 'post_dislike' post.id %}" method="POST" class="inline">
+                    {% csrf_token %}
+                    <button type="submit" class="p-2 hover:scale-110 active:scale-95 transition-transform">
+                      <i data-lucide="thumbs-down" class="w-5 h-5 sm:w-6 sm:h-6 {% if post.user_reaction == 'DISLIKE' %}fill-current text-red-500{% endif %}"></i>
+                    </button>
+                  </form>
+                  <span class="text-sm font-mono tabular-nums min-w-[2rem]">{{ post.dislikes_count }}</span>
+                </div>
+
+                <!-- Favourited -->
+                <div class="flex items-center gap-1.5 text-zinc-400 hover:text-pink-400 p-2 -m-2 rounded-xl hover:bg-zinc-900/50 transition-all">
+                  <form action="{% url 'post_favourite' post.id %}" method="POST" class="inline">
+                    {% csrf_token %}
+                    <button type="submit" class="p-2 hover:scale-110 active:scale-95 transition-transform">
+                      {% if post.is_favourited_by_user %}
+                        <i data-lucide="heart" class="w-5 h-5 sm:w-6 sm:h-6 text-pink-500 fill-current"></i>
+                      {% else %}
+                        <i data-lucide="heart-plus" class="w-5 h-5 sm:w-6 sm:h-6"></i>
+                      {% endif %}
+                    </button>
+                  </form>
+                  <span class="text-sm font-mono tabular-nums min-w-[2rem]">{{ post.favourited_by.count }}</span>
+                </div>
+              </div>
+
+              {% if user.is_staff %}
+              <form action="{% url 'make_featured' post.id %}" method="POST" class="p-2 hover:scale-110 transition-transform">
+                {% csrf_token %}
+                <button type="submit" title="Feature post">
+                  <i data-lucide="pin" class="w-6 h-6 text-yellow-500 rotate-[24deg] {% if post.is_featured %}fill-current{% endif %}"></i>
+                </button>
+              </form>
+              {% endif %}
+            </div>
+          </div>
+          {% endfor %}
+          {% else %}
+          <div class="text-center py-20 mx-6 bg-zinc-950/50 border-2 border-zinc-800 rounded-3xl">
+            <i data-lucide="frown" class="w-16 h-16 mx-auto mb-6 text-zinc-600"></i>
+            <p class="text-xl font-bold text-zinc-400 mb-2">No posts found</p>
+            <p class="text-zinc-500 text-base">Try different search terms or filters</p>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    <script>
+      lucide.createIcons();
+      
+      // Mobile menu toggle
+      const mobileBtn = document.getElementById('mobileMenuBtn');
+      const mobilePanel = document.getElementById('mobileUserPanel');
+      
+      mobileBtn?.addEventListener('click', () => {
+        mobilePanel?.classList.toggle('hidden');
+      });
+      
+      // Close mobile menu when clicking links
+      document.querySelectorAll('#mobileUserPanel a').forEach(link => {
+        link.addEventListener('click', () => {
+          mobilePanel?.classList.add('hidden');
+        });
+      });
+    </script>
+  </body>
+</html>

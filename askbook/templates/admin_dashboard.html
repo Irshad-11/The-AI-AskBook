@@ -1,0 +1,389 @@
+{% load static %}{% load static tailwind_tags %}
+<!doctype html>
+<html lang="en" class="dark">
+  <head>
+    <meta charset="utf-8" />
+    <title>Admin Portal | AskBook</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+  </head>
+  <body class="bg-[#020617] text-slate-200 font-sans flex min-h-screen">
+    <aside
+      class="w-64 bg-[#0b0f14] border-r border-slate-800 flex flex-col sticky top-0 h-screen"
+    >
+      <div
+        class="p-6 text-xl font-bold border-b border-slate-800 flex items-center gap-2"
+      >
+        <i data-lucide="shield-check" class="text-sky-500"></i> Admin Portal
+      </div>
+
+      <nav class="flex-1 p-4 space-y-2 mt-4">
+        <a
+          href="?tab=dashboard"
+          class="flex items-center justify-between p-3 rounded-lg {% if current_tab == 'dashboard' %}bg-sky-600 text-white{% else %}hover:bg-slate-800{% endif %}"
+        >
+          <span class="flex items-center gap-3"
+            ><i data-lucide="layout-dashboard" class="w-5 h-5"></i>
+            Dashboard</span
+          >
+        </a>
+
+        <a
+          href="?tab=posts"
+          class="flex items-center justify-between p-3 rounded-lg {% if current_tab == 'posts' %}bg-sky-600 text-white{% else %}hover:bg-slate-800{% endif %}"
+        >
+          <span class="flex items-center gap-3"
+            ><i data-lucide="file-text" class="w-5 h-5"></i> Manage Posts</span
+          >
+          {% if pending_count > 0 %}
+          <span
+            class="bg-red-600 text-[10px] px-2 py-0.5 rounded-full animate-pulse"
+            >{{ pending_count }}</span
+          >
+          {% endif %}
+        </a>
+
+        <a
+          href="?tab=users"
+          class="flex items-center justify-between p-3 rounded-lg {% if current_tab == 'users' %}bg-sky-600 text-white{% else %}hover:bg-slate-800{% endif %}"
+        >
+          <span class="flex items-center gap-3"
+            ><i data-lucide="users" class="w-5 h-5"></i> Manage Users</span
+          >
+        </a>
+      </nav>
+
+      <div class="p-4 border-t border-slate-800 space-y-2">
+        <a
+          href="{% url 'feed' %}"
+          class="flex items-center gap-3 p-3 text-slate-400 hover:text-white transition text-sm"
+        >
+          <i data-lucide="external-link" class="w-4 h-4"></i> Go to Feed
+        </a>
+        <a
+          href="{% url 'logout' %}"
+          class="flex items-center gap-3 p-3 text-red-400 hover:text-red-300 transition text-sm"
+        >
+          <i data-lucide="log-out" class="w-4 h-4"></i> Logout
+        </a>
+      </div>
+    </aside>
+
+    <main class="flex-1 overflow-y-auto">
+      <header
+        class="h-16 border-b border-slate-800 flex items-center justify-between px-8 bg-[#020617]/80 backdrop-blur-md sticky top-0 z-10"
+      >
+        <h1 class="font-semibold text-slate-400">
+          Welcome back, <span class="text-white">{{ user.username }}</span>
+        </h1>
+        <div class="flex items-center gap-4">
+          <span
+            class="text-xs bg-slate-800 px-3 py-1 rounded-full text-slate-400 uppercase tracking-widest font-bold"
+            >Admin Level</span
+          >
+        </div>
+      </header>
+
+      <div class="p-8 max-w-7xl mx-auto">
+        {% if current_tab == 'dashboard' %}
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+          <div class="bg-zinc-900 border border-zinc-800 p-6 rounded-xl">
+            <p class="text-slate-500 text-sm font-semibold uppercase">
+              Total Users
+            </p>
+            <h2 class="text-3xl font-bold mt-2">{{ total_users }}</h2>
+            <p class="text-sky-500 text-xs mt-2 flex items-center gap-1">
+              <i data-lucide="trending-up" class="w-3 h-3"></i> {{ verified_users }} verified
+            </p>
+          </div>
+          <div class="bg-zinc-900 border border-zinc-800 p-6 rounded-xl">
+            <p class="text-slate-500 text-sm font-semibold uppercase">
+              Total Posts
+            </p>
+            <h2 class="text-3xl font-bold mt-2">{{ total_posts }}</h2>
+            <div class="flex gap-2 mt-2">
+              <span class="text-green-500 text-[10px]"
+                >{{ approved_posts }} OK</span
+              >
+              <span class="text-red-500 text-[10px]"
+                >{{ rejected_posts }} REJ</span
+              >
+            </div>
+          </div>
+          <div
+            class="bg-zinc-900 border border-zinc-800 p-6 rounded-xl border-l-4 border-l-red-600"
+          >
+            <p class="text-slate-500 text-sm font-semibold uppercase">
+              Pending Review
+            </p>
+            <h2 class="text-3xl font-bold mt-2 text-red-500">
+              {{ pending_posts }}
+            </h2>
+            <p class="text-slate-500 text-xs mt-2">Requires attention</p>
+          </div>
+          <div class="bg-zinc-900 border border-zinc-800 p-6 rounded-xl">
+            <p class="text-slate-500 text-sm font-semibold uppercase">
+              Featured
+            </p>
+            <h2 class="text-3xl font-bold mt-2 text-yellow-500">
+              {{ featured_posts }}
+            </h2>
+            <p class="text-slate-500 text-xs mt-2">Pinned items</p>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <div class="bg-zinc-950 border border-zinc-800 rounded-xl p-6">
+            <h3 class="font-bold mb-6 flex items-center gap-2">
+              <i data-lucide="award" class="text-green-500"></i> Top Users
+              (Approved)
+            </h3>
+            <div class="space-y-4">
+              {% for u in top_approved_users %}
+              <div
+                class="flex items-center justify-between p-3 bg-zinc-900 rounded-lg"
+              >
+                <span class="text-sm font-medium">{{ u.username }}</span>
+                <span
+                  class="text-xs bg-green-500/10 text-green-500 px-3 py-1 rounded-full"
+                  >{{ u.count }} Posts</span
+                >
+              </div>
+              {% endfor %}
+            </div>
+          </div>
+          <div class="bg-zinc-950 border border-zinc-800 rounded-xl p-6">
+            <h3 class="font-bold mb-6 flex items-center gap-2">
+              <i data-lucide="pin" class="text-yellow-500"></i> Featured Owners
+            </h3>
+            <div class="space-y-4">
+              {% for u in top_featured_users %}
+              <div
+                class="flex items-center justify-between p-3 bg-zinc-900 rounded-lg"
+              >
+                <span class="text-sm font-medium">{{ u.username }}</span>
+                <span
+                  class="text-xs bg-yellow-500/10 text-yellow-500 px-3 py-1 rounded-full"
+                  >{{ u.count }} Featured</span
+                >
+              </div>
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+
+        {% elif current_tab == 'posts' %}
+        <div class="space-y-12">
+          <section>
+            <h3
+              class="text-red-500 font-bold mb-6 flex items-center gap-2 text-xl"
+            >
+              <i data-lucide="clock" class="w-6 h-6"></i> Pending Approval
+            </h3>
+            <div class="grid grid-cols-1 gap-4">
+              {% for p in pending_list %}
+              <div
+                class="bg-zinc-900 border border-zinc-800 p-6 rounded-xl flex justify-between items-center group hover:border-slate-600 transition"
+              >
+                <div class="max-w-2xl">
+                  <div class="flex items-center gap-2 mb-2">
+                    <img
+                      src="{% if p.created_by.avatar %}{{ p.created_by.avatar.url }}{% else %}https://i.pinimg.com/1200x/2b/87/2b/2b872b6b404b61fba3f2b67569b07801.jpg{% endif %}"
+                      class="w-5 h-5 rounded-full"
+                    />
+                    <span class="text-xs text-slate-500"
+                      >{{ p.created_by.username }}</span
+                    >
+                  </div>
+                  <h4 class="font-bold text-lg mb-1">{{ p.title }}</h4>
+                  <p class="text-slate-400 text-sm line-clamp-2 mb-3">
+                    {{ p.summary }}
+                  </p>
+                  <div class="flex gap-4 text-xs text-slate-500">
+                    <span class="flex items-center gap-1"
+                      ><i data-lucide="thumbs-up" class="w-3 h-3"></i> {{
+                      p.likes_count }}</span
+                    >
+                    <span class="flex items-center gap-1"
+                      ><i data-lucide="heart" class="w-3 h-3"></i> {{
+                      p.favourited_by.count }}</span
+                    >
+                    <a
+                      href="{% url 'post_detail' p.pk p.slug %}"
+                      class="text-sky-400 hover:underline"
+                      >Read full post →</a
+                    >
+                  </div>
+                </div>
+                <div class="flex flex-col gap-2">
+                  <a
+                    href="{% url 'update_post_status' p.id 'APPROVED' %}"
+                    class="bg-green-600 hover:bg-green-500 text-white px-4 py-2 rounded text-xs font-bold text-center"
+                  >
+                    Approve
+                  </a>
+
+                  <button
+                    onclick="openRejectModal('{{ p.id }}', '{{ p.title|escapejs }}')"
+                    class="border border-red-600 text-red-600 hover:bg-red-600/10 px-4 py-2 rounded text-xs font-bold text-center"
+                  >
+                    Reject
+                  </button>
+                </div>
+              </div>
+              {% empty %}
+              <p class="text-slate-600 italic">No posts pending review.</p>
+              {% endfor %}
+            </div>
+          </section>
+        </div>
+
+        {% elif current_tab == 'users' %}
+        <div
+          class="bg-zinc-950 border border-zinc-800 rounded-xl overflow-hidden shadow-2xl"
+        >
+          <table class="w-full text-left border-collapse">
+            <thead class="bg-zinc-900">
+              <tr>
+                <th class="p-4 text-xs font-bold uppercase text-slate-500">
+                  User
+                </th>
+                <th class="p-4 text-xs font-bold uppercase text-slate-500">
+                  Posts (A/P/R)
+                </th>
+                <th class="p-4 text-xs font-bold uppercase text-slate-500">
+                  Approval %
+                </th>
+                <th class="p-4 text-xs font-bold uppercase text-slate-500">
+                  Verified
+                </th>
+                <th class="p-4 text-xs font-bold uppercase text-slate-500">
+                  Action
+                </th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-zinc-800">
+              {% for u in users %}
+              <tr class="hover:bg-zinc-900/50 transition">
+                <td class="p-4">
+                  <div class="flex items-center gap-3">
+                    <img
+                      src="{% if u.avatar %}{{ u.avatar.url }}{% else %}https://i.pinimg.com/1200x/2b/87/2b/2b872b6b404b61fba3f2b67569b07801.jpg{% endif %}"
+                      class="w-8 h-8 rounded-full border border-slate-700"
+                    />
+                    <span class="font-medium">{{ u.username }}</span>
+                  </div>
+                </td>
+                <td class="p-4 text-sm">
+                  <span class="text-green-500">{{ u.app_p }}</span> /
+                  <span class="text-yellow-500">{{ u.total_p }}</span> /
+                  <span class="text-red-500">{{ u.rej_p }}</span>
+                </td>
+                <td class="p-4">
+                  <div
+                    class="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden max-w-[100px]"
+                  >
+                    <div class="bg-sky-500 h-full" style="width: 75%"></div>
+                  </div>
+                </td>
+                <td class="p-4">
+                  {% if u.is_verified %}
+                  <span class="text-green-500 flex items-center gap-1 text-xs"
+                    ><i data-lucide="check-circle" class="w-4 h-4"></i>
+                    Yes</span
+                  >
+                  {% else %}
+                  <span class="text-slate-600 text-xs">No</span>
+                  {% endif %}
+                </td>
+                <td class="p-4">
+                  <a
+                    href="{% url 'toggle_verify' u.id %}"
+                    class="text-xs font-bold {% if u.is_verified %}text-red-400{% else %}text-green-400{% endif %} hover:underline"
+                  >
+                    {% if u.is_verified %}Revoke{% else %}Verify{% endif %}
+                  </a>
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        {% endif %}
+      </div>
+    </main>
+
+    <div
+      id="rejectModal"
+      class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4"
+    >
+      <div
+        class="bg-zinc-900 border border-zinc-800 w-full max-w-md rounded-2xl p-6 shadow-2xl"
+      >
+        <h3 class="text-xl font-bold text-white mb-2">Reject Post</h3>
+        <p id="modalPostTitle" class="text-slate-400 text-sm mb-6"></p>
+
+        <form id="rejectForm" method="POST" action="">
+          {% csrf_token %}
+          <label class="block text-xs font-bold uppercase text-slate-500 mb-2"
+            >Reason for Rejection</label
+          >
+          <textarea
+            name="rejection_reason"
+            required
+            rows="4"
+            class="w-full bg-zinc-950 border border-zinc-800 rounded-lg p-3 text-sm text-slate-200 focus:ring-2 focus:ring-red-600 outline-none transition"
+            placeholder="Tell the user why their post was rejected..."
+          ></textarea>
+
+          <div class="flex gap-3 mt-6">
+            <button
+              type="button"
+              onclick="closeRejectModal()"
+              class="flex-1 px-4 py-2 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-sm font-semibold"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              class="flex-1 px-4 py-2 rounded-lg bg-red-600 hover:bg-red-500 text-sm font-semibold text-white"
+            >
+              Confirm Reject
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <script>
+      lucide.createIcons();
+    </script>
+
+    <script>
+    function openRejectModal(postId, postTitle) {
+        const modal = document.getElementById('rejectModal');
+        const form = document.getElementById('rejectForm');
+        const titleText = document.getElementById('modalPostTitle');
+
+        // Dynamically set the form action URL
+        form.action = `/admin-portal/update-post-status/${postId}/REJECTED/`;
+        titleText.innerText = `Post: ${postTitle}`;
+        
+        modal.classList.remove('hidden');
+    }
+
+    function closeRejectModal() {
+        document.getElementById('rejectModal').classList.add('hidden');
+    }
+
+    // Close modal if clicking outside the box
+    window.onclick = function(event) {
+        const modal = document.getElementById('rejectModal');
+        if (event.target == modal) {
+            closeRejectModal();
+        }
+    }
+</script>
+
+  </body>
+</html>

@@ -1,0 +1,791 @@
+{% load static tailwind_tags %}
+<!doctype html>
+<html lang="en" class="scroll-smooth">
+  <head>
+    <title>AskBook | The AI AskBook</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Barlow:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Teko:wght@300..700&display=swap"
+      rel="stylesheet"
+    />
+    {% tailwind_css %}
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap");
+      @import url("https://fonts.googleapis.com/css2?family=Barlow:ital,wght@0,400;0,700;0,900;1,400&family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap");
+
+      body {
+        font-family: "Plus Jakarta Sans", sans-serif;
+      }
+      .barlow-bold {
+        font-family: "Barlow", sans-serif;
+        font-weight: 700;
+      }
+
+      .teko {
+        font-family: "Teko", sans-serif;
+        font-optical-sizing: auto;
+        font-weight: <weight>;
+        font-style: normal;
+      }
+      .glass {
+        background: rgba(15, 23, 42, 0.6);
+        backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+      }
+
+      .hero-gradient {
+        background: radial-gradient(
+          circle at 50% 50%,
+          rgba(79, 70, 229, 0.15) 0%,
+          transparent 50%
+        );
+      }
+
+      .prompt-card:hover {
+        transform: translateY(-5px);
+        border-color: rgba(99, 102, 241, 0.5);
+      }
+
+      @keyframes scan {
+        0% {
+          transform: translateY(-100px);
+        }
+        100% {
+          transform: translateY(600px);
+        }
+      }
+
+      /* 1. Hide Number Input Spinners (Arrows) */
+      /* Chrome, Safari, Edge, Opera */
+      .no-spinner::-webkit-outer-spin-button,
+      .no-spinner::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+      }
+      /* Firefox */
+      .no-spinner[type="number"] {
+        -moz-appearance: textfield;
+      }
+
+      /* 2. Interactive Steam Animation */
+      @keyframes steam-rise {
+        0% {
+          transform: translateY(0) scaleX(1);
+          opacity: 0;
+        }
+        50% {
+          transform: translateY(-15px) scaleX(1.4);
+          opacity: 0.6;
+        }
+        100% {
+          transform: translateY(-30px) scaleX(2);
+          opacity: 0;
+        }
+      }
+
+      .steam-line {
+        width: 3px;
+        height: 15px;
+        background: #f97316; /* orange-500 */
+        filter: blur(3px);
+        animation: steam-rise 2s infinite ease-out;
+      }
+
+      /* Custom scrollbar for a cleaner look */
+      ::-webkit-scrollbar {
+        width: 5px;
+      }
+      ::-webkit-scrollbar-track {
+        background: #0f172a;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #334155;
+        border-radius: 10px;
+      }
+    </style>
+  </head>
+
+  <body class="bg-[#020617] text-slate-200 selection:bg-indigo-500/30">
+    <!-- Navigation -->
+    <nav class="sticky top-5 md:top-0 w-full z-50 glass border-b border-white/5">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 h-16 sm:h-20 flex justify-between items-center">
+        <!-- Logo -->
+        <div class="flex items-center gap-2 sm:gap-3 group cursor-pointer">
+          <div class="p-1.5 sm:p-2 bg-indigo-600 rounded-md sm:rounded-lg group-hover:rotate-12 transition-transform">
+            <i data-lucide="WandSparkles" class="text-white w-5 h-5 sm:w-6 sm:h-6"></i>
+          </div>
+          <span class="text-lg sm:text-xl font-extrabold tracking-tight text-white">AskBook</span>
+        </div>
+
+        <!-- Desktop Links -->
+        <div class="hidden md:flex items-center gap-6 lg:gap-8 text-xs sm:text-sm font-medium text-slate-400">
+          <a href="#explore" class="hover:text-indigo-400 transition">Library</a>
+          <a href="#stats" class="hover:text-indigo-400 transition">Impact</a>
+          <a href="#contribute" class="hover:text-indigo-400 transition">Contribute</a>
+        </div>
+
+        <!-- Buttons -->
+        <div class="flex items-center gap-2 sm:gap-4">
+          <a href="/auth/?tab=login" class="inline-flex items-center justify-center px-3 sm:px-5 py-1.5 sm:py-2 text-xs sm:text-sm font-semibold hover:text-white transition">
+            Login
+          </a>
+          <a href="/auth/?tab=signup" class="inline-flex items-center justify-center bg-indigo-600 hover:bg-indigo-500 px-4 sm:px-5 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-bold text-white transition shadow-lg shadow-indigo-500/20">
+            Get Started
+          </a>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <main class="relative hero-gradient pt-32 pb-20">
+      <div class="max-w-7xl mx-auto px-6">
+        <div class="text-center space-y-8 mb-20">
+          <div
+  class="inline-flex items-center gap-2 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full
+         bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-[10px] sm:text-xs
+         font-bold uppercase tracking-widest"
+>
+  <!-- Ping Dot -->
+  <span class="relative flex h-2 w-2 sm:h-2.5 sm:w-2.5">
+    <span
+      class="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"
+    ></span>
+    <span
+      class="relative inline-flex rounded-full h-2 w-2 sm:h-2.5 sm:w-2.5 bg-indigo-500"
+    ></span>
+  </span>
+  The Web's Prompt Treasury
+</div>
+
+
+          <h1
+            class="text-6xl md:text-8xl barlow-bold text-white tracking-tight leading-[1.1]"
+          >
+            The AI
+            <span
+              class="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-400"
+              >AskBook</span
+            >
+          </h1>
+
+          <p
+  class="max-w-xl sm:max-w-2xl mx-auto text-sm sm:text-base md:text-lg text-slate-400 leading-relaxed sm:leading-7 md:leading-8 text-center"
+>
+  The right prompts to unlock your potential
+</p>
+
+
+          <div class="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-6">
+  <!-- Explore Library -->
+   <a href="/feed">
+  <button
+    class="inline-flex items-center gap-2 px-6 sm:px-10 py-3 sm:py-4 rounded-xl font-bold text-white text-sm sm:text-base
+           bg-gradient-to-r from-indigo-600 to-indigo-500
+           hover:from-indigo-500 hover:to-indigo-400 transition-all shadow-lg shadow-indigo-500/25"
+  >
+    <i data-lucide="search" class="w-4 h-4 sm:w-5 sm:h-5"></i>
+    Explore Library
+  </button></a>
+
+  <!-- Share Prompt -->
+   <a href="/dashboard/posts/create/">
+  <button
+    class="inline-flex items-center gap-2 px-6 sm:px-10 py-3 sm:py-4 rounded-full font-bold text-sm sm:text-base
+           glass text-white border border-white/10
+           hover:bg-white/5 transition-all"
+  >
+    <i data-lucide="plus-circle" class="w-4 h-4 sm:w-5 sm:h-5 text-indigo-400"></i>
+    Share Prompt
+  </button>
+  </a>
+</div>
+
+    </div>
+        </div>
+
+        <div
+          class="relative max-w-4xl mx-auto mt-20 h-[400px] flex items-center justify-center"
+        >
+          <div class="relative w-full max-w-lg group cursor-pointer">
+            <div
+              class="absolute inset-0 bg-slate-800/40 border border-white/5 rounded-[2rem] backdrop-blur-sm transform -rotate-6 translate-y-4 scale-95 group-hover:-rotate-12 group-hover:-translate-x-12 transition-all duration-500 ease-out"
+            ></div>
+
+            <div
+              class="absolute inset-0 bg-indigo-900/20 border border-white/10 rounded-[2rem] backdrop-blur-md transform rotate-3 -translate-y-2 group-hover:rotate-6 group-hover:translate-x-12 transition-all duration-500 ease-out"
+            >
+              <div class="p-8 opacity-20 font-mono text-xs">
+                <p>// Neural Fragment_042</p>
+                <p class="mt-4">
+                  "Draft a contract for a trade guild operating in a
+                  zero-gravity environment..."
+                </p>
+              </div>
+            </div>
+
+            <div
+              class="relative bg-[#0f172a] border border-white/20 rounded-[2.5rem] p-8 md:p-10 shadow-2xl transform transition-all duration-500 group-hover:-translate-y-4"
+            >
+              <div class="flex justify-between items-center mb-8">
+                <div class="flex gap-1.5">
+                  <div
+                    class="w-2 h-2 rounded-full bg-indigo-500 animate-pulse"
+                  ></div>
+                  <div class="w-2 h-2 rounded-full bg-slate-700"></div>
+                </div>
+                <span
+                  class="text-[10px] font-bold text-indigo-400 uppercase tracking-widest bg-indigo-500/10 px-3 py-1 rounded-full"
+                >
+                  AI AskBook
+                </span>
+              </div>
+
+              <div class="space-y-4">
+                <p class="text-slate-500 font-mono text-xs italic">
+                  a Prompt Sharing Platform
+                </p>
+                <h3
+                  class="text-xl md:text-2xl font-bold text-white leading-relaxed"
+                >
+                  "We are a community-led archive dedicated to bridging the gap between a blank input box and the perfect AI output."
+                </h3>
+              </div>
+
+              <div
+                class="mt-10 pt-6 border-t border-white/5 flex justify-between items-center text-slate-500"
+              >
+                <div class="flex items-center gap-2">
+                  <i data-lucide="user" class="w-4 h-4"></i>
+                  <span class="text-xs">Curator: IRSHAD HOSSAIN</span>
+                </div>
+                <div class="flex gap-4">
+                  <i
+                    data-lucide="bookmark"
+                    class="w-4 h-4 hover:text-indigo-400"
+                  ></i>
+                  <i
+                    data-lucide="copy"
+                    class="w-4 h-4 hover:text-indigo-400"
+                  ></i>
+                </div>
+              </div>
+            </div>
+
+            <div
+              class="absolute -inset-4 bg-indigo-500/10 blur-[60px] -z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-700"
+            ></div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+
+
+
+    <section class="py-16 md:py-24 bg-[#020617] overflow-hidden">
+  <div class="max-w-7xl mx-auto px-6">
+    <div class="flex flex-col lg:flex-row items-center gap-12 md:gap-20">
+      
+      <div class="w-full lg:w-1/2 space-y-8">
+        <div class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
+          # ONE
+        </div>
+        
+        <h2 class="text-4xl md:text-6xl font-extrabold text-white tracking-tight leading-tight">
+          What is <span class="bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400">AskBook?</span>
+        </h2>
+
+        <div class="space-y-6 text-base md:text-xl text-slate-300">
+          <p>
+            AskBook is the open library of high-quality AI prompts. It solves the single biggest bottleneck in the AI era: 
+            <span class="text-white font-semibold">spending more time fighting the prompt than actually getting the work done.</span>
+          </p>
+
+          <p>
+            Instead of starting from a blank screen, you leverage a global hive-mind of tested, refined instructions. Get professional-grade outputs from ChatGPT, Claude, and Midjourney—instantly.
+          </p>
+        </div>
+
+        <div class="pt-4 text-base md:text-xl font-medium text-indigo-300 italic border-l-2 border-indigo-500 pl-6">
+          By the community, for the community. <br class="hidden md:block"> 
+          <span class="text-white not-italic text-base md:text-xl font-bold">That’s AskBook.</span>
+        </div>
+      </div>
+
+      <div class="w-full lg:w-1/2 grid gap-6">
+        
+        <div class="group p-6 rounded-2xl bg-slate-900/50 border border-slate-800 hover:border-indigo-500/50 transition-all">
+          <div class="flex items-start gap-4">
+            <div class="p-3 rounded-lg bg-indigo-500/10 text-indigo-400 group-hover:bg-indigo-500 group-hover:text-white transition-colors">
+              <i data-lucide="search" class=" w-4 h-4 md:w-6 md:h-6"></i>
+            </div>
+            <div>
+              <h3 class=" text-base md:text-xl font-bold text-white mb-2">Discover proven prompts</h3>
+              <p class="text-slate-400 text-xs md:text-base ">Access templates ranked by thousands of successful real-world uses and community votes.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="group p-6 rounded-2xl bg-slate-900/50 border border-slate-800 hover:border-purple-500/50 transition-all">
+          <div class="flex items-start gap-4">
+            <div class="p-3 rounded-lg bg-purple-500/10 text-purple-400 group-hover:bg-purple-500 group-hover:text-white transition-colors">
+              <i data-lucide="pen-tool" class=" w-4 h-4 md:w-6 md:h-6"></i>
+            </div>
+            <div>
+              <h3 class="text-base md:text-xl font-bold text-white mb-2">Contribute your best</h3>
+              <p class="text-slate-400 text-xs md:text-base ">Share your discoveries, help others scale their productivity, and see your prompts rise to the top.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="group p-6 rounded-2xl bg-slate-900/50 border border-slate-800 hover:border-pink-500/50 transition-all">
+          <div class="flex items-start gap-4">
+            <div class="p-3 rounded-lg bg-pink-500/10 text-pink-400 group-hover:bg-pink-500 group-hover:text-white transition-colors">
+              <i data-lucide="zap" class=" w-4 h-4 md:w-6 md:h-6"></i>
+            </div>
+            <div>
+              <h3 class="text-base md:text-xl font-bold text-white mb-2">Kill trial-and-error</h3>
+              <p class="text-slate-400 text-xs md:text-base">Stop burning time on "okay" results. Grab the battle-tested version and focus on your actual output.</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+
+
+
+
+    <!-- Updated System Metrics Section -->
+    <section id="stats" class="py-20 relative bg-[#020617] font-barlow">
+      <div class="max-w-6xl mx-auto px-6">
+        
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <!-- Total Posts -->
+          <div class="group relative overflow-hidden bg-slate-900/30 border border-white/5 p-8 transition-all duration-300 hover:border-indigo-500/30">
+            <i data-lucide="database" class="absolute -bottom-1 -right-1 w-20 h-20 text-indigo-500/20 transition-all duration-500 group-hover:text-indigo-500/40 group-hover:scale-110"></i>
+            <div class="absolute top-0 left-0 w-0 h-1 bg-indigo-500 transition-all duration-500 group-hover:w-full"></div>
+            <div class="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div>
+                <p class="text-[10px] font-bold uppercase tracking-[0.3em] text-slate-500 mb-1">Total Posts</p>
+                <div class="text-5xl font-black text-white tracking-tighter group-hover:text-indigo-400 transition-colors">
+                  {{ total_posts|default:"0" }}
+                </div>
+              </div>
+              <p class="font-sans text-[11px] text-slate-500 max-w-[180px] leading-relaxed">
+                Verified public prompts available in the library.
+              </p>
+            </div>
+          </div>
+
+          <!-- Weekly Growth -->
+          <div class="group relative overflow-hidden bg-slate-900/30 border border-white/5 p-8 transition-all duration-300 hover:border-emerald-500/30">
+            <i data-lucide="trending-up" class="absolute -bottom-1 -right-1 w-20 h-20 text-emerald-500/20 transition-all duration-500 group-hover:text-emerald-500/40 group-hover:scale-110"></i>
+            <div class="absolute top-0 left-0 w-0 h-1 bg-emerald-500 transition-all duration-500 group-hover:w-full"></div>
+            <div class="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div>
+                <p class="text-[10px] font-bold uppercase tracking-[0.3em] text-slate-500 mb-1">Weekly Growth</p>
+                <div class="text-5xl font-black text-white tracking-tighter group-hover:text-emerald-400 transition-colors">
+                  {{ weekly_growth }}%
+                </div>
+              </div>
+              <p class="font-sans text-[11px] text-slate-500 max-w-[180px] leading-relaxed">
+                Increase in new prompts this week vs last week.
+              </p>
+            </div>
+          </div>
+
+          <!-- Active Curators -->
+          <div class="group relative overflow-hidden bg-slate-900/30 border border-white/5 p-8 transition-all duration-300 hover:border-purple-500/30">
+            <i data-lucide="users" class="absolute -bottom-1 -right-1 w-20 h-20 text-purple-500/20 transition-all duration-500 group-hover:text-purple-500/40 group-hover:scale-110"></i>
+            <div class="absolute top-0 left-0 w-0 h-1 bg-purple-500 transition-all duration-500 group-hover:w-full"></div>
+            <div class="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div>
+                <p class="text-[10px] font-bold uppercase tracking-[0.3em] text-slate-500 mb-1">Active Curators</p>
+                <div class="text-5xl font-black text-white tracking-tighter group-hover:text-purple-400 transition-colors">
+                  {{ active_curators|default:"0" }}
+                </div>
+              </div>
+              <p class="font-sans text-[11px] text-slate-500 max-w-[180px] leading-relaxed">
+                Users who have contributed at least one prompt.
+              </p>
+            </div>
+          </div>
+
+          <!-- Topic Covered -->
+          <div class="group relative overflow-hidden bg-slate-900/30 border border-white/5 p-8 transition-all duration-300 hover:border-amber-500/30">
+            <i data-lucide="zap" class="absolute -bottom-1 -right-1 w-20 h-20 text-amber-500/20 transition-all duration-500 group-hover:text-amber-500/40 group-hover:scale-110"></i>
+            <div class="absolute top-0 left-0 w-0 h-1 bg-amber-500 transition-all duration-500 group-hover:w-full"></div>
+            <div class="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div>
+                <p class="text-[10px] font-bold uppercase tracking-[0.3em] text-slate-500 mb-1">Topics Covered</p>
+                <div class="text-5xl font-black text-white tracking-tighter group-hover:text-amber-400 transition-colors">
+                  {{ total_topics|default:"0" }}
+                </div>
+              </div>
+              <p class="font-sans text-[11px] text-slate-500 max-w-[180px] leading-relaxed">
+                Unique tags used across all public prompts.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+
+
+    <section class="py-20 md:py-32 bg-[#020617] relative overflow-hidden">
+  <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-indigo-500/10 blur-[120px] rounded-full pointer-events-none"></div>
+      
+  <div class="max-w-7xl mx-auto px-6 relative z-10">
+    <div class="inline-flex mb-2 items-center px-3 py-1 rounded-full text-sm font-medium bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
+          # TWO
+        </div>
+    <div class="mb-16 md:mb-20">
+      
+      <h2 class="text-3xl md:text-5xl font-extrabold text-white tracking-tight text-left max-w-3xl leading-tight">
+        How you benefit from <span class="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-cyan-400">AI AskBook</span>
+      </h2>
+      <div class="mt-4 h-1.5 w-24 bg-gradient-to-r from-indigo-500 to-cyan-500 rounded-full"></div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+      
+      <div class="group relative p-5 md:p-8 rounded-3xl bg-slate-900/40 border border-slate-800 hover:border-indigo-500/50 hover:bg-slate-900/60 transition-all duration-300">
+        <div class="w-14 h-14 rounded-2xl bg-indigo-500/10 flex items-center justify-center text-indigo-400 mb-6 group-hover:scale-110 group-hover:bg-indigo-500 group-hover:text-white transition-all duration-300">
+          <i data-lucide="clock" class="w-7 h-7"></i>
+        </div>
+        <h3 class="text-lg md:text-2xl font-bold text-white mb-4">Save hours every week</h3>
+        <p class="text-slate-400 text-xs md:text-base leading-relaxed">
+          Skip the frustrating trial-and-error cycle. Start with prompts already <span class="text-indigo-300 font-medium">battle-tested</span> by thousands of real-world users.
+        </p>
+      </div>
+
+      <div class="group relative p-5 md:p-8 rounded-3xl bg-slate-900/40 border border-slate-800 hover:border-cyan-500/50 hover:bg-slate-900/60 transition-all duration-300">
+        <div class="w-14 h-14 rounded-2xl bg-cyan-500/10 flex items-center justify-center text-cyan-400 mb-6 group-hover:scale-110 group-hover:bg-cyan-700 group-hover:text-white transition-all duration-300">
+          <i data-lucide="rocket" class="w-7 h-7"></i>
+        </div>
+        <h3 class="text-lg md:text-2xl font-bold text-white mb-4">Master-level outputs</h3>
+        <p class="text-slate-400 text-xs md:text-base leading-relaxed">
+          Get higher quality, more precise results with <span class="text-cyan-300 font-medium">zero revisions</span>. Professional-grade AI responses from your very first try.
+        </p>
+      </div>
+
+      <div class="group relative p-5 md:p-8 rounded-3xl bg-slate-900/40 border border-slate-800 hover:border-purple-500/50 hover:bg-slate-900/60 transition-all duration-300">
+        <div class="w-14 h-14 rounded-2xl bg-purple-500/10 flex items-center justify-center text-purple-400 mb-6 group-hover:scale-110 group-hover:bg-purple-500 group-hover:text-white transition-all duration-300">
+          <i data-lucide="users" class="w-7 h-7"></i>
+        </div>
+        <h3 class="text-lg md:text-2xl font-bold text-white mb-4">Join a living library</h3>
+        <p class="text-slate-400 text-xs md:text-base leading-relaxed">
+          Discover advanced techniques, share your own breakthroughs, and help build the <span class="text-purple-300 font-medium">global standard</span> for prompting.
+        </p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+
+
+
+    <!-- Trending Collections – now Featured Posts -->
+    <section id="explore" class="py-24">
+      <div class="max-w-7xl mx-auto px-6">
+        <div class="flex justify-between items-end mb-12">
+          <div>
+            <h2 class="text-4xl font-bold text-white mb-4">
+              Featured Collections
+            </h2>
+            <p class="text-slate-400">
+              Handpicked prompts highlighted by the community and curators.
+            </p>
+          </div>
+          <a href="/feed">
+            <button class="hidden md:flex items-center gap-2 text-indigo-400 font-semibold hover:text-indigo-300 transition">
+              View All Prompts <i data-lucide="arrow-right" class="w-4 h-4"></i>
+            </button>
+          </a>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {% for post in featured_posts %}
+            <div class="prompt-card glass p-8 rounded-3xl transition-all flex flex-col justify-between">
+              <div>
+                <div class="flex gap-2 mb-6">
+                  <span class="px-3 py-1 rounded-full bg-blue-500/10 text-blue-400 text-[10px] font-bold uppercase">Featured</span>
+                  {% if post.ai_model %}
+                    <span class="px-3 py-1 rounded-full bg-white/5 text-slate-400 text-[10px] font-bold uppercase">{{ post.ai_model }}</span>
+                  {% endif %}
+                </div>
+                <h3 class="text-xl font-bold text-white mb-3 line-clamp-2">
+                  {{ post.title }}
+                </h3>
+                <p class="text-slate-400 text-sm italic mb-6 line-clamp-3">
+                  {{ post.summary|truncatewords:40 }}
+                </p>
+              </div>
+              <div class="flex justify-between items-center pt-6 border-t border-white/5">
+                <div class="flex items-center gap-2">
+                  <div class="w-6 h-6 rounded-full bg-slate-700 overflow-hidden">
+                    <img src="{% if post.created_by.avatar %}{{ post.created_by.avatar.url }}{% else %}https://i.pinimg.com/1200x/2b/87/2b/2b872b6b404b61fba3f2b67569b07801.jpg{% endif %}" 
+                         class="w-full h-full object-cover" alt="{{ post.created_by.username }}">
+                  </div>
+                  <span class="text-xs text-slate-300">@{{ post.created_by.username }}</span>
+                </div>
+                <div class="flex gap-3 text-slate-500">
+                  <span class="flex items-center gap-1 text-xs">
+                    <i data-lucide="heart" class="w-3 h-3"></i> {{ post.favourited_by.count|default:0 }}
+                  </span>
+                </div>
+              </div>
+            </div>
+          {% empty %}
+            <div class="col-span-3 text-center py-12 text-slate-500">
+              No featured posts yet. Check back soon!
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+    </section>
+
+
+    <section class="relative py-20 md:py-32 bg-[#020617] overflow-hidden">
+  <div class="absolute top-0 right-0 w-[400px] h-[400px] bg-indigo-600/10 blur-[120px] rounded-full pointer-events-none"></div>
+  <div class="absolute bottom-0 left-0 w-[400px] h-[400px] bg-emerald-600/5 blur-[120px] rounded-full pointer-events-none"></div>
+
+  <div class="max-w-7xl mx-auto px-6 relative z-10">
+    <div class="flex flex-col lg:flex-row gap-16 items-start">
+      
+      <div class="w-full lg:w-5/12 space-y-8">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold tracking-widest uppercase bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+          <span class="relative flex h-2 w-2">
+            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+            <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+          </span>
+          Early Release v2.6.0
+        </div>
+
+        <h2 class="text-4xl md:text-5xl lg:text-6xl font-extrabold text-white tracking-tight leading-[1.1]">
+          Be part of the <span class="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-emerald-400">Foundation.</span>
+        </h2>
+
+        <div class="space-y-6 text-base md:text-lg text-slate-300 leading-relaxed">
+          <p class=" text-lg md:text-xl font-medium text-white">
+            You’ve arrived at the beginning of something special.
+          </p>
+          <p>
+            AI AskBook is young, fast-moving, and evolving. We are building the most beautiful prompt-sharing platform on the planet, and you're invited to shape it from day one.
+          </p>
+          <div class="p-4 rounded-2xl bg-slate-900/50 border border-slate-800 italic">
+            <p class="text-indigo-300">
+              "We're in active development toward a stable release. Rest assured, your posts are protected and will migrate seamlessly to the final platform."
+            </p>
+          </div>
+        </div>
+
+        <div class="pt-4">
+          <a href="/dashboard/posts/create/" class="group inline-flex items-center gap-3 px-4 py-3 md:px-8 md:py-4 bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-lg rounded-2xl transition-all shadow-xl shadow-indigo-500/20 hover:shadow-indigo-500/40 hover:-translate-y-1">
+            <i data-lucide="plus-circle" class="w-6 h-6 transition-transform group-hover:rotate-90"></i>
+            Share Your First Prompt
+          </a>
+        </div>
+      </div>
+
+      <div class="w-full lg:w-7/12 grid sm:grid-cols-2 gap-4">
+        
+        <div class="p-4 md:p-8 rounded-3xl bg-slate-900/40 border border-slate-800/50 backdrop-blur-md hover:bg-slate-800/40 transition-colors">
+          <div class=" w-9 h-9 md:w-12 md:h-12 rounded-xl bg-indigo-500/10 flex items-center justify-center text-indigo-400 mb-3 md:mb-6">
+            <i data-lucide="pen-tool" class=" w-5 h-5 md:w-6 md:h-6"></i>
+          </div>
+          <h3 class=" text-base md:text-xl font-bold text-white mb-2">Share the Magic</h3>
+          <p class="text-slate-400 text-xs md:text-sm leading-relaxed">
+            Upload the prompts that changed your workflow. Let your best instructions help thousands.
+          </p>
+        </div>
+
+        <div class="p-4 md:p-8 rounded-3xl bg-slate-900/40 border border-slate-800/50 backdrop-blur-md hover:bg-slate-800/40 transition-colors">
+          <div class=" w-9 h-9 md:w-12 md:h-12 rounded-xl bg-emerald-500/10 flex items-center justify-center text-emerald-400 mb-3 md:mb-6">
+            <i data-lucide="star" class="w-5 h-5 md:w-6 md:h-6"></i>
+          </div>
+          <h3 class=" text-base md:text-xl  font-bold text-white mb-2">Curate the Best</h3>
+          <p class="text-slate-400 text-xs md:text-sm leading-relaxed">
+            Vote on what works. Your feedback helps the best prompts rise to the top of the library.
+          </p>
+        </div>
+
+        <div class="p-4 md:p-8 rounded-3xl bg-slate-900/40 border border-slate-800/50 backdrop-blur-md hover:bg-slate-800/40 transition-colors sm:col-span-2">
+          <div class="flex flex-col md:flex-row md:items-center gap-6">
+            <div class=" w-9 h-9 md:w-12 md:h-12 flex-shrink-0 rounded-xl bg-purple-500/10 flex items-center justify-center text-purple-400 mb-3 md:mb-6">
+              <i data-lucide="settings" class="w-5 h-5 md:w-6 md:h-6"></i>
+            </div>
+            <div>
+              <h3 class=" text-base md:text-xl  font-bold text-white mb-1">Shape the Future</h3>
+              <p class="text-slate-400 text-xs md:text-sm leading-relaxed">
+                Suggest new features, report bugs, and help us build the community standard for prompting. This is as much your platform as it is ours.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="sm:col-span-2 text-center pt-4">
+          <p class="text-slate-500 text-sm italic">
+            Thanks for being an early adopter. Let's build the best library together.
+          </p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+
+
+
+    <section id="contribute" class="max-w-4xl mx-auto px-4 sm:px-6 pb-20 sm:pb-32">
+  <!-- Header -->
+  <div class="text-center mb-10 sm:mb-16">
+    <h2 class="text-2xl sm:text-3xl font-bold text-white mb-2 sm:mb-4 italic font-serif">
+      Buy me a Coffee
+    </h2>
+    <p class="text-slate-400 text-sm sm:text-base max-w-sm mx-auto">
+      Your support covers the server and hosting fees.
+    </p>
+  </div>
+
+  <!-- Cards -->
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-8 max-w-3xl mx-auto">
+    <!-- Standard Cup Card -->
+    <div
+      class="group relative bg-[#0f172a]/80 border border-orange-500/30 rounded-xl sm:rounded-[2.5rem]
+             p-6 sm:p-10 text-center transition-all duration-500 hover:border-orange-500 hover:-translate-y-1 sm:hover:-translate-y-2 shadow-lg sm:shadow-2xl"
+    >
+      <div
+        class="absolute -top-5 left-1/2 -translate-x-1/2 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-700"
+      >
+        <div class="steam-line mx-auto"></div>
+      </div>
+
+      <div class="mb-4 sm:mb-6">
+        <i
+          data-lucide="cup-soda"
+          class="text-orange-500 w-10 h-10 sm:w-14 sm:h-14 mx-auto transition-transform group-hover:scale-110"
+        ></i>
+      </div>
+
+      <h4 class="text-white font-bold text-lg sm:text-xl mb-1">Standard Cup</h4>
+      <p class="text-slate-500 text-[9px] sm:text-xs mb-4 sm:mb-6 uppercase tracking-widest">
+        Community Favorite
+      </p>
+
+      <div class="text-2xl sm:text-4xl font-black text-orange-500 mb-4 sm:mb-8">
+        100 <span class="text-sm sm:text-lg">TK</span>
+      </div>
+
+      <button
+        class="w-full py-2.5 sm:py-4 bg-gradient-to-r from-orange-500 to-orange-400 text-black font-black rounded-xl sm:rounded-2xl
+               hover:from-orange-400 hover:to-orange-300 transition-all shadow-lg shadow-orange-500/25 active:scale-95 text-sm sm:text-base"
+      >
+        Support Now
+      </button>
+    </div>
+
+    <!-- Your Choice Card -->
+    <div
+      class="group relative bg-[#0f172a]/40 border border-white/5 rounded-xl sm:rounded-[2.5rem]
+             p-6 sm:p-10 text-center transition-all duration-500 hover:border-indigo-500/40"
+    >
+      <div class="mb-4 sm:mb-6">
+        <i
+          data-lucide="heart-handshake"
+          class="text-slate-500 w-10 h-10 sm:w-14 sm:h-14 mx-auto transition-colors duration-500 group-hover:text-indigo-400"
+        ></i>
+      </div>
+
+      <h4 class="text-white font-bold text-lg sm:text-xl mb-2 sm:mb-3">Your Choice</h4>
+
+      <div class="relative mb-4 sm:mb-8">
+        <input
+          type="number"
+          placeholder="Amount in TK"
+          class="no-spinner w-full bg-black/40 border border-white/10 rounded-xl sm:rounded-2xl py-2.5 sm:py-4 px-4 sm:px-6 text-white text-center text-lg sm:text-xl font-bold
+                 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all"
+        />
+      </div>
+
+      <button
+        class="w-full py-2.5 sm:py-4 bg-gradient-to-r from-indigo-600 to-indigo-500 text-white font-bold rounded-xl sm:rounded-2xl
+               hover:from-indigo-500 hover:to-indigo-400 transition-all shadow-lg shadow-indigo-500/25 active:scale-95 text-sm sm:text-base"
+      >
+        Contribute
+      </button>
+    </div>
+  </div>
+</section>
+
+
+    <footer class="border-t border-white/5 pt-16 sm:pt-20 pb-8 sm:pb-12 bg-[#0f172a]">
+  <!-- Top Section -->
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 grid grid-cols-1 md:grid-cols-4 gap-8 sm:gap-12 mb-12 sm:mb-16">
+    
+    <!-- Logo & About -->
+    <div class="col-span-1 md:col-span-2">
+      <div class="flex items-center gap-2 mb-4 sm:mb-6">
+        <div class="p-1.5 sm:p-2 bg-indigo-600 rounded">
+          <i data-lucide="WandSparkles" class="text-white w-4 h-4 sm:w-5 sm:h-5"></i>
+        </div>
+        <span class="text-lg sm:text-xl font-bold text-white">The AI AskBook</span>
+      </div>
+      <p class="text-slate-500 leading-relaxed max-w-sm text-sm sm:text-base">
+        We are a community-led archive dedicated to bridging the gap between a blank input box and the perfect AI output.
+      </p>
+    </div>
+
+    <!-- Community Links -->
+    <div>
+      <h4 class="text-white font-bold mb-4 sm:mb-6 text-sm sm:text-base">Community</h4>
+      <h6>-</h6>
+    </div>
+
+    <!-- Legal Links -->
+    <div>
+      <h4 class="text-white font-bold mb-4 sm:mb-6 text-sm sm:text-base">Developer Profile</h4>
+      <ul class="space-y-3 sm:space-y-4 text-slate-500 text-sm sm:text-base">
+        <li><a href="https://github.com/Irshad-11" class="hover:text-indigo-400 transition">Github</a></li>
+        <li><a href="https://www.linkedin.com/in/irshad-hossain-785548323/" class="hover:text-indigo-400 transition">LinkedIn</a></li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Bottom Section -->
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 pt-6 sm:pt-8 border-t border-white/5 text-center text-slate-500 text-xs sm:text-sm">
+    &copy; 2026 AI AskBook • IRSHAD HOSSAIN
+  </div>
+</footer>
+
+
+    <script>
+      // Initialize Lucide icons
+      lucide.createIcons();
+    </script>
+  </body>
+</html>
+
+
+
+
+
+

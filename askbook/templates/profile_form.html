@@ -1,0 +1,176 @@
+{% load static tailwind_tags %}
+
+<!doctype html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="utf-8">
+  <title>Edit Profile | AskBook</title>
+
+  {% tailwind_css %}
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+
+<body class="bg-black text-slate-200 font-mono">
+
+<div class="max-w-3xl mx-auto py-14 px-6 space-y-10">
+
+  <!-- HEADER -->
+  <div class="flex items-center gap-5">
+    <!-- Avatar -->
+    <div class="relative">
+      {% if user.avatar %}
+        <img
+          src="{{ user.avatar.url }}"
+          class="w-20 h-20 rounded-full object-cover border border-slate-800"
+        >
+      {% else %}
+        <div class="w-20 h-20 rounded-full bg-slate-800 flex items-center justify-center text-slate-500">
+          <i data-lucide="user" class="w-8 h-8"></i>
+        </div>
+      {% endif %}
+    </div>
+
+    <!-- Username + Verification -->
+    <div>
+      <div class="flex items-center gap-2">
+        <h1 class="text-2xl font-extrabold tracking-tight">
+          {{ user.username }}
+        </h1>
+
+        {% if user.is_verified %}
+          <i data-lucide="gem" class="w-4 h-4 text-green-500"></i>
+        {% else %}
+          <i data-lucide="circle-dashed" class="w-4 h-4 text-red-500/30"></i>
+        {% endif %}
+      </div>
+
+      <p class="text-xs text-slate-400">
+        Edit your public profile information
+      </p>
+    </div>
+  </div>
+
+  <!-- FORM -->
+  <form method="post" enctype="multipart/form-data" class="space-y-8">
+    {% csrf_token %}
+
+    <!-- AVATAR UPLOAD -->
+    <section class="border border-slate-800 rounded-2xl p-6 bg-[#0b0f14] space-y-4">
+      <h2 class="text-xs uppercase tracking-widest text-slate-400">
+        Profile Photo
+      </h2>
+
+      <input
+        type="file"
+        name="avatar"
+        accept="image/*"
+        class="block w-full text-sm text-slate-400
+               file:bg-slate-900 file:border file:border-slate-700
+               file:px-4 file:py-2 file:rounded-lg
+               file:text-slate-200 file:cursor-pointer"
+      >
+    </section>
+
+    <!-- BIO -->
+    <section class="border border-slate-800 rounded-2xl p-6 bg-[#0b0f14] space-y-4">
+      <h2 class="text-xs uppercase tracking-widest text-slate-400">
+        Bio
+      </h2>
+
+      <textarea
+        name="bio"
+        rows="4"
+        class="w-full bg-slate-900 border border-slate-800 rounded-lg px-4 py-2 text-sm"
+        placeholder="Tell the world who you are..."
+      >{{ user.bio }}</textarea>
+    </section>
+
+    <!-- DETAILS -->
+    <section class="border border-slate-800 rounded-2xl p-6 bg-[#0b0f14] space-y-6">
+      <h2 class="text-xs uppercase tracking-widest text-slate-400">
+        Details
+      </h2>
+
+      <div>
+        <label class="text-xs text-slate-400">Works At</label>
+        <input
+          type="text"
+          name="works_at"
+          value="{{ user.works_at }}"
+          class="w-full bg-slate-900 border border-slate-800 rounded-lg px-4 py-2 text-sm"
+          placeholder="Company / Organization"
+        >
+      </div>
+
+      <div>
+        <label class="text-xs text-slate-400">Institute</label>
+        <input
+          type="text"
+          name="institute_at"
+          value="{{ user.institute_at }}"
+          class="w-full bg-slate-900 border border-slate-800 rounded-lg px-4 py-2 text-sm"
+          placeholder="University / School"
+        >
+      </div>
+
+      <div>
+        <label class="text-xs text-slate-400">Location</label>
+        <input
+          type="text"
+          name="location"
+          value="{{ user.location }}"
+          class="w-full bg-slate-900 border border-slate-800 rounded-lg px-4 py-2 text-sm"
+          placeholder="City, Country"
+        >
+      </div>
+      <div>
+  <label class="text-xs text-slate-400">GitHub URL</label>
+  <input
+    type="url"
+    name="github_url"               
+    value="{{ user.github_url|default:'' }}"  
+    class="w-full bg-slate-900 border border-slate-800 rounded-lg px-4 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none transition"
+    placeholder="https://github.com/yourusername"
+  >
+</div>
+
+<div>
+  <label class="text-xs text-slate-400">LinkedIn URL</label>
+  <input
+    type="url"
+    name="linkedin_url"             
+    value="{{ user.linkedin_url|default:'' }}"  
+    class="w-full bg-slate-900 border border-slate-800 rounded-lg px-4 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none transition"
+    placeholder="https://www.linkedin.com/in/yourusername"
+  >
+</div>
+    </section>
+
+    <!-- ACTIONS -->
+    <div class="flex justify-between items-center pt-6 border-t border-slate-800">
+      <a
+        href="{% url 'public_profile' user.profile_slug %}"
+        class="text-xs text-slate-400 hover:text-slate-200"
+      >
+        Cancel
+      </a>
+
+      <button
+        type="submit"
+        class="px-8 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 font-bold transition"
+      >
+        Save Profile
+      </button>
+    </div>
+
+  </form>
+</div>
+
+<script>
+  lucide.createIcons();
+</script>
+
+</body>
+</html>

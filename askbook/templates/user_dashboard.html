@@ -1,0 +1,896 @@
+{% load static tailwind_tags %}
+<!doctype html>
+<html class="dark" lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AskBook | Dashboard</title>
+
+    {% tailwind_css %}
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      body {
+        font-family: "Manrope", sans-serif;
+      }
+
+      /* High contrast active tab */
+      .tab-active {
+        @apply bg-indigo-600/20 border-b-2 border-indigo-500 text-indigo-400 font-semibold;
+      }
+      .tab-inactive {
+        @apply border-b-2 border-transparent text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/40 transition-colors;
+      }
+
+      /* Clean custom scrollbar */
+      ::-webkit-scrollbar {
+        width: 6px;
+      }
+      ::-webkit-scrollbar-track {
+        background: #0f1217;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #4b5563;
+        border-radius: 3px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: #6b7280;
+      }
+    </style>
+  </head>
+
+  <body
+    class="bg-slate-950 text-zinc-100 min-h-screen antialiased overflow-x-hidden"
+  >
+    <div class="flex h-screen">
+      <!-- DESKTOP SIDEBAR – always visible on lg+ screens -->
+      <aside
+        class="hidden lg:flex lg:flex-col lg:w-72 lg:bg-slate-900 lg:border-r lg:border-slate-800 lg:static lg:shadow-none flex-shrink-0"
+      >
+        <div class="p-5 flex items-center gap-3 border-b border-slate-800">
+          <img
+            src="{% if user.avatar %}{{ user.avatar.url }}{% elif user.avatar_url %}{{ user.avatar_url }}{% else %}https://i.pinimg.com/1200x/2b/87/2b/2b872b6b404b61fba3f2b67569b07801.jpg{% endif %}"
+            alt="{{ user.username }}"
+            class="w-10 h-10 rounded-full object-cover border-2 border-slate-700"
+          />
+          <h1 class="font-extrabold text-white">
+            <span class="text-gray-400">Dashboard</span>
+          </h1>
+        </div>
+
+        <nav class="flex-1 px-3 py-6 space-y-1 overflow-y-auto">
+          <!-- Dashboard -->
+          <a
+            href="/dashboard"
+            class="flex items-center gap-3 px-4 py-3 rounded-xl transition-colors {% if request.path == '/dashboard' or request.path == '/dashboard/' %} bg-indigo-600/20 text-indigo-400 border-l-4 border-indigo-500 font-semibold {% else %} text-zinc-300 hover:bg-slate-800 hover:text-white {% endif %}"
+          >
+            <i data-lucide="layout-dashboard" class="w-5 h-5"></i>
+            <span class="font-medium">Dashboard</span>
+          </a>
+
+          <!-- Manage Posts -->
+          <a
+            href="/dashboard/posts"
+            class="flex items-center gap-3 px-4 py-3 rounded-xl transition-colors {% if request.path == '/dashboard/posts' or request.path == '/dashboard/posts/' %} bg-indigo-600/20 text-indigo-400 border-l-4 border-indigo-500 font-semibold {% else %} text-zinc-300 hover:bg-slate-800 hover:text-white {% endif %}"
+          >
+            <i data-lucide="file-text" class="w-5 h-5"></i>
+            <span class="font-medium">Manage Posts</span>
+          </a>
+
+          <!-- Profile -->
+          <a
+            href="/dashboard/profile"
+            class="flex items-center gap-3 px-4 py-3 rounded-xl transition-colors {% if request.path == '/dashboard/profile' or request.path == '/dashboard/profile/' %} bg-indigo-600/20 text-indigo-400 border-l-4 border-indigo-500 font-semibold {% else %} text-zinc-300 hover:bg-slate-800 hover:text-white {% endif %}"
+          >
+            <i data-lucide="user" class="w-5 h-5"></i>
+            <span class="font-medium">Profile</span>
+          </a>
+
+          <!-- Settings -->
+          <a
+            href="/dashboard/settings"
+            class="flex items-center gap-3 px-4 py-3 rounded-xl transition-colors {% if request.path == '/dashboard/settings' or request.path == '/dashboard/settings/' %} bg-indigo-600/20 text-indigo-400 border-l-4 border-indigo-500 font-semibold {% else %} text-zinc-300 hover:bg-slate-800 hover:text-white {% endif %}"
+          >
+            <i data-lucide="settings" class="w-5 h-5"></i>
+            <span class="font-medium">Settings</span>
+          </a>
+
+          <div class="border-t border-slate-800 my-6"></div>
+
+          <a
+            href="{% url 'feed' %}"
+            class="flex items-center justify-center gap-3 w-full px-6 py-4 bg-indigo-800 hover:bg-indigo-500 text-white font-semibold rounded-xl transition-colors shadow-md"
+          >
+            <i data-lucide="rss" class="w-5 h-5"></i>
+            <span>Go to Feed</span>
+          </a>
+          <a
+            href="{% url 'post_create' %}"
+            class="flex items-center justify-center gap-3 w-full px-6 py-4 bg-indigo-800 hover:bg-indigo-500 text-white font-semibold rounded-xl transition-colors shadow-md"
+          >
+            <i data-lucide="plus" class="w-5 h-5"></i>
+            <span>Create Post</span>
+          </a>
+
+          <a
+            href="{% url 'logout' %}"
+            class="flex items-center justify-center gap-3 w-full px-6 py-4 mt-3 bg-rose-900 hover:bg-rose-600 text-white font-semibold rounded-xl transition-colors shadow-md"
+          >
+            <i data-lucide="log-out" class="w-5 h-5"></i>
+            <span>Logout</span>
+          </a>
+        </nav>
+      </aside>
+
+      <!-- ──────────────────────────────────────────────── -->
+      <!-- MOBILE SIDEBAR (drawer) – only visible on < lg   -->
+      <!-- ──────────────────────────────────────────────── -->
+
+      <input type="checkbox" id="mobile-sidebar-toggle" class="hidden peer" />
+
+      <aside
+        class="lg:hidden fixed inset-y-0 left-0 z-50 w-72 bg-slate-900 border-r border-slate-800 transform -translate-x-full peer-checked:translate-x-0 transition-transform duration-300 ease-in-out flex flex-col shadow-2xl"
+      >
+        <!-- Mobile sidebar header with close button -->
+        <div
+          class="p-5 flex items-center justify-between border-b border-slate-800"
+        >
+          <div class="flex items-center gap-3">
+            <img
+              src="{% if user.avatar %}{{ user.avatar.url }}{% elif user.avatar_url %}{{ user.avatar_url }}{% else %}https://i.pinimg.com/1200x/2b/87/2b/2b872b6b404b61fba3f2b67569b07801.jpg{% endif %}"
+              alt="{{ user.username }}"
+              class="w-10 h-10 rounded-full object-cover border-2 border-slate-700"
+            />
+            <h1 class="font-extrabold text-white">
+              <span class="text-gray-400">Dashboard</span>
+            </h1>
+          </div>
+
+          <label
+            for="mobile-sidebar-toggle"
+            class="cursor-pointer text-zinc-400 hover:text-white"
+          >
+            <i data-lucide="x" class="w-7 h-7"></i>
+          </label>
+        </div>
+
+        <nav class="flex-1 px-3 py-6 space-y-1 overflow-y-auto">
+          <!-- Dashboard -->
+          <a
+            href="/dashboard"
+            class="flex items-center gap-3 px-4 py-3 rounded-xl transition-colors {% if request.path == '/dashboard' or request.path == '/dashboard/' %} bg-indigo-600/20 text-indigo-400 border-l-4 border-indigo-500 font-semibold {% else %} text-zinc-300 hover:bg-slate-800 hover:text-white {% endif %}"
+          >
+            <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
+            <span class="text-base">Dashboard</span>
+          </a>
+
+          <!-- Manage Posts -->
+          <a
+            href="/dashboard/posts"
+            class="flex items-center gap-3 px-4 py-3 rounded-xl transition-colors {% if request.path == '/dashboard/posts' or request.path == '/dashboard/posts/' %} bg-indigo-600/20 text-indigo-400 border-l-4 border-indigo-500 font-semibold {% else %} text-zinc-300 hover:bg-slate-800 hover:text-white {% endif %}"
+          >
+            <i data-lucide="file-text" class="w-4 h-4"></i>
+            <span class="text-base">Manage Posts</span>
+          </a>
+
+          <!-- Profile -->
+          <a
+            href="/dashboard/profile"
+            class="flex items-center gap-3 px-4 py-3 rounded-xl transition-colors {% if request.path == '/dashboard/profile' or request.path == '/dashboard/profile/' %} bg-indigo-600/20 text-indigo-400 border-l-4 border-indigo-500 font-semibold {% else %} text-zinc-300 hover:bg-slate-800 hover:text-white {% endif %}"
+          >
+            <i data-lucide="user" class="w-4 h-4"></i>
+            <span class="text-base">Profile</span>
+          </a>
+
+          <!-- Settings -->
+          <a
+            href="/dashboard/settings"
+            class="flex items-center gap-3 px-4 py-3 rounded-xl transition-colors {% if request.path == '/dashboard/settings' or request.path == '/dashboard/settings/' %} bg-indigo-600/20 text-indigo-400 border-l-4 border-indigo-500 font-semibold {% else %} text-zinc-300 hover:bg-slate-800 hover:text-white {% endif %}"
+          >
+            <i data-lucide="settings" class="w-4 h-4"></i>
+            <span class="text-base">Settings</span>
+          </a>
+
+          <div class="border-t border-slate-800 my-6"></div>
+          <div class="w-full gap-3 flex flex-col justify-center items-center">
+            <a
+              href="{% url 'feed' %}"
+              class="flex items-center justify-center gap-3 w-fit px-3 py-2 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold rounded-xl transition-colors shadow-md"
+            >
+              <i data-lucide="rss" class="w-4 h-4"></i>
+              <span class="text-xs">Go to Feed</span>
+            </a>
+            <a
+              href="{% url 'post_create' %}"
+              class="flex items-center justify-center gap-3 w-fit px-3 py-2 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold rounded-xl transition-colors shadow-md"
+            >
+              <i data-lucide="plus" class="w-4 h-4"></i>
+              <span class="text-xs">Create Post</span>
+            </a>
+
+            <a
+              href="{% url 'logout' %}"
+              class="flex items-center justify-center gap-3 w-fit px-3 py-2 bg-rose-700 hover:bg-rose-600 text-white font-semibold rounded-xl transition-colors shadow-md"
+            >
+              <i data-lucide="log-out" class="w-4 h-4"></i>
+              <span class="text-xs">Logout</span>
+            </a>
+          </div>
+        </nav>
+      </aside>
+
+      <!-- Mobile overlay (closes drawer when clicking outside) -->
+      <label
+        for="mobile-sidebar-toggle"
+        class="fixed inset-0 bg-black/50 z-40 lg:hidden opacity-0 peer-checked:opacity-100 pointer-events-none peer-checked:pointer-events-auto transition-opacity duration-300"
+        aria-hidden="true"
+      ></label>
+
+      <!-- MAIN CONTENT AREA -->
+      <div class="flex-1 flex flex-col overflow-hidden">
+        <!-- Mobile-only header with hamburger -->
+        <header
+          class="lg:hidden bg-slate-900 border-b border-slate-800 px-4 py-3 flex items-center justify-between sticky top-0 z-30"
+        >
+          <!-- Hamburger -->
+          <label
+            for="mobile-sidebar-toggle"
+            class="cursor-pointer text-zinc-200 hover:text-white -ml-2 p-2 rounded-lg active:bg-slate-800"
+            aria-label="Toggle navigation menu"
+          >
+            <i data-lucide="menu" class="w-7 h-7"></i>
+          </label>
+
+          <!-- Title -->
+          <p class="font-bold text-white text-lg truncate">
+            <span class="text-base md:text-lg">{{ user.username }}</span>
+            <span class="text-gray-400"> | Dashboard</span>
+          </p>
+
+          <!-- Avatar -->
+          <img
+            src="{% if user.avatar %}{{ user.avatar.url }}{% elif user.avatar_url %}{{ user.avatar_url }}{% else %}https://i.pinimg.com/1200x/2b/87/2b/2b872b6b404b61fba3f2b67569b07801.jpg{% endif %}"
+            alt="{{ user.username }}"
+            class="w-9 h-9 rounded-full object-cover border-2 border-slate-700 flex-shrink-0"
+          />
+        </header>
+
+        <!-- Main content -->
+        <main class="flex-1 overflow-y-auto">
+          <div class="p-5 sm:p-8 lg:p-10 max-w-7xl mx-auto">
+            {% if request.path == '/dashboard/' %}
+            <div class="mb-10">
+              <h1 class="text-3xl sm:text-4xl font-extrabold text-white">
+                Hello, {{ user.username }}! 👋
+              </h1>
+              <p class="mt-2 text-lg text-zinc-400">
+                Here's what's happening with your posts today
+              </p>
+              <a
+                href="/feed/"
+                class="mt-5 inline-flex items-center gap-2 px-6 py-3 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold rounded-xl transition-colors"
+              >
+                <i data-lucide="arrow-left" class="w-5 h-5"></i>
+                Go to Feed
+              </a>
+            </div>
+
+            <!-- Stats Grid -->
+            <div
+              class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12"
+            >
+              <div
+                class="bg-slate-900 p-6 rounded-2xl border border-slate-800 hover:border-indigo-600/50 transition-colors"
+              >
+                <div class="flex relative justify-between items-center mb-4">
+                  <span class="text-zinc-400 font-medium">Total Posts</span>
+                  <i
+                    data-lucide="file-text"
+                    class="absolute -right-3 -top-3 w-24 h-24 text-indigo-500/30"
+                  ></i>
+                </div>
+                <p class="text-4xl font-bold text-white">
+                  {{ stats.total_posts }}
+                </p>
+                <span class="text-emerald-400 font-medium"
+                  >+{{ stats.total_posts|add:"-1" }}</span
+                >
+              </div>
+
+              <div
+                class="bg-slate-900 p-6 rounded-2xl border border-slate-800 hover:border-emerald-600/50 transition-colors"
+              >
+                <div class="flex relative justify-between items-center mb-4">
+                  <span class="text-zinc-400 font-medium">Approved</span>
+                  <i
+                    data-lucide="check-circle"
+                    class="absolute -right-3 -top-3 w-24 h-24 text-emerald-500/30"
+                  ></i>
+                </div>
+                <p class="text-4xl font-bold text-white">
+                  {{ stats.approved_posts }}
+                </p>
+              </div>
+
+              <div
+                class="bg-slate-900 p-6 rounded-2xl border border-slate-800 hover:border-amber-600/50 transition-colors"
+              >
+                <div class="flex relative justify-between items-center mb-4">
+                  <span class="text-zinc-400 font-medium">Pending</span>
+                  <i data-lucide="clock" class="absolute -right-3 -top-3 w-24 h-24 text-amber-500/30"></i>
+                </div>
+                <p class="text-4xl font-bold text-white">
+                  {{ stats.pending_posts }}
+                </p>
+              </div>
+
+              <div
+                class="bg-slate-900 p-6 rounded-2xl border border-slate-800 hover:border-red-600/50 transition-colors"
+              >
+                <div class="flex relative justify-between items-center mb-4">
+                  <span class="text-zinc-400 font-medium">Rejected</span>
+                  <i data-lucide="x-circle" class="absolute -right-3 -top-3 w-24 h-24 text-red-500/30"></i>
+                </div>
+                <p class="text-4xl font-bold text-white">
+                  {{ stats.rejected_posts }}
+                </p>
+              </div>
+            </div>
+
+            <!-- Engagement Stats -->
+            <div
+              class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12"
+            >
+              <div class="bg-slate-900 p-6 rounded-2xl border border-slate-800">
+                <span class="text-zinc-400 font-medium block mb-2"
+                  >Total Views</span
+                >
+                <p class="text-3xl font-bold text-white">
+                  {{ stats.total_views }}
+                </p>
+                <span class="text-indigo-400 font-medium">↑ 12.5%</span>
+              </div>
+
+              <div class="bg-slate-900 p-6 rounded-2xl border border-slate-800">
+                <span class="text-zinc-400 font-medium block mb-2"
+                  >Likes Received</span
+                >
+                <p class="text-3xl font-bold text-white">
+                  {{ stats.total_likes }}
+                </p>
+                <span class="text-emerald-400 font-medium">↑ 8.2%</span>
+              </div>
+
+              <div class="bg-slate-900 p-6 rounded-2xl border border-slate-800">
+                <span class="text-zinc-400 font-medium block mb-2"
+                  >Dislikes</span
+                >
+                <p class="text-3xl font-bold text-white">
+                  {{ stats.total_dislikes }}
+                </p>
+                <span class="text-red-400 font-medium">↓ 3.1%</span>
+              </div>
+
+              <div class="bg-slate-900 p-6 rounded-2xl border border-slate-800">
+                <span class="text-zinc-400 font-medium block mb-2"
+                  >Favourited by Others</span
+                >
+                <p class="text-3xl font-bold text-white">
+                  {{ stats.total_favourites_received }}
+                </p>
+                <span class="text-pink-400 font-medium">↑ 15.7%</span>
+              </div>
+            </div>
+
+            <!-- Recent Posts -->
+            <div
+              class="bg-slate-900 rounded-2xl border border-slate-800 overflow-hidden"
+            >
+              <div class="p-6 border-b border-slate-800">
+                <h3
+                  class="text-2xl font-bold text-white flex items-center gap-3"
+                >
+                  <i data-lucide="clock" class="w-6 h-6"></i>
+                  Recent Posts
+                </h3>
+              </div>
+
+              {% if recent_posts %}
+              <ul class="divide-y divide-slate-800">
+                {% for post in recent_posts %}
+                <li class="p-6 hover:bg-slate-800 transition-colors">
+                  <div
+                    class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4"
+                  >
+                    <div class="flex-1">
+                      <p class="font-bold text-xl text-white">
+                        {{ post.title }}
+                      </p>
+                      <p class="text-sm text-zinc-500 mt-1">
+                        {{ post.created_at|date:"M d, Y" }} • {{ post.created_at|time:"H:i" }}
+                      </p>
+                    </div>
+                    <span
+                      class="text-xs px-4 py-2 rounded-full font-semibold min-w-[100px] text-center {% if post.status == 'APPROVED' %}bg-emerald-950 text-emerald-300 border border-emerald-800/50 {% elif post.status == 'PENDING' %}bg-amber-950 text-amber-300 border border-amber-800/50 {% else %}bg-red-950 text-red-300 border border-red-800/50{% endif %}"
+                    >
+                      {{ post.status }}
+                    </span>
+                  </div>
+                </li>
+                {% endfor %}
+              </ul>
+              {% else %}
+              <div class="p-12 text-center text-zinc-500">
+                <i
+                  data-lucide="file-text"
+                  class="w-16 h-16 mx-auto mb-4 opacity-50"
+                ></i>
+                <h4 class="text-lg font-semibold text-zinc-400 mb-3">
+                  No posts yet
+                </h4>
+                <a
+                  href="{% url 'post_create' %}"
+                  class="inline-flex px-6 py-3 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold rounded-xl transition-colors"
+                >
+                  Create your first post
+                </a>
+              </div>
+              {% endif %}
+            </div>
+            {% endif %}
+
+            <!--==============================-->
+            <!--         Manage Post          -->
+            <!--==============================-->
+
+            {% if '/dashboard/posts' in request.path %}
+
+            <div class="mb-10">
+              <h1 class="text-3xl sm:text-4xl font-extrabold text-white">
+                Manage Posts
+              </h1>
+              <p class="mt-2 text-lg text-zinc-400">
+                View and manage all your created posts by status
+              </p>
+            </div>
+
+            <!-- ─── Sub Tabs ──────────────────────────────────────────────── -->
+            <div
+              class="flex flex-wrap gap-2 md:gap-3 mb-8 border-b border-slate-800 pb-1 overflow-x-auto"
+            >
+              <a
+                href="/dashboard/posts"
+                class="px-5 py-2.5 rounded-lg font-medium text-sm md:text-base whitespace-nowrap transition-colors {% if request.GET.tab != 'approved' and request.GET.tab != 'pending' and request.GET.tab != 'rejected' and request.GET.tab != 'favourites' %} bg-indigo-600/30 text-indigo-300 border border-indigo-500/40 {% else %} text-zinc-400 hover:bg-slate-800 hover:text-zinc-200 {% endif %}"
+              >
+                All {% if total_posts %}({{ total_posts }}){% endif %}
+              </a>
+
+              <a
+                href="/dashboard/posts?tab=approved"
+                class="px-5 py-2.5 rounded-lg font-medium text-sm md:text-base whitespace-nowrap transition-colors {% if request.GET.tab == 'approved' %} bg-emerald-600/30 text-emerald-300 border border-emerald-500/40 {% else %} text-zinc-400 hover:bg-slate-800 hover:text-zinc-200 {% endif %}"
+              >
+                <i data-lucide="check-circle" class="inline w-4 h-4 mr-1.5"></i>
+                Approved {% if approved_posts %}({{ approved_posts }}){% endif %}
+              </a>
+
+              <a
+                href="/dashboard/posts?tab=pending"
+                class="px-5 py-2.5 rounded-lg font-medium text-sm md:text-base whitespace-nowrap transition-colors {% if request.GET.tab == 'pending' %} bg-amber-600/30 text-amber-300 border border-amber-500/40 {% else %} text-zinc-400 hover:bg-slate-800 hover:text-zinc-200 {% endif %}"
+              >
+                <i data-lucide="clock" class="inline w-4 h-4 mr-1.5"></i>
+                Pending {% if pending_posts %}({{ pending_posts }}){% endif %}
+              </a>
+
+              <a
+                href="/dashboard/posts?tab=rejected"
+                class="px-5 py-2.5 rounded-lg font-medium text-sm md:text-base whitespace-nowrap transition-colors {% if request.GET.tab == 'rejected' %} bg-red-600/30 text-red-300 border border-red-500/40 {% else %} text-zinc-400 hover:bg-slate-800 hover:text-zinc-200 {% endif %}"
+              >
+                <i data-lucide="x-circle" class="inline w-4 h-4 mr-1.5"></i>
+                Rejected {% if rejected_posts %}({{ rejected_posts }}){% endif %}
+              </a>
+
+              <a
+                href="/dashboard/posts?tab=favourites"
+                class="px-5 py-2.5 rounded-lg font-medium text-sm md:text-base whitespace-nowrap transition-colors {% if request.GET.tab == 'favourites' %} bg-pink-600/30 text-pink-300 border border-pink-500/40 {% else %} text-zinc-400 hover:bg-slate-800 hover:text-zinc-200 {% endif %}"
+              >
+                <i data-lucide="heart" class="inline w-4 h-4 mr-1.5"></i>
+                Favourites {% if favourites_count %}({{ favourites_count }}){% endif %}
+              </a>
+            </div>
+
+            <!-- ─── Posts List (placeholder – replace with your actual loop) ─── -->
+            <div class="space-y-6">
+              {% if posts %} 
+              {% for post in posts %}
+  <div class="bg-zinc-950 border border-zinc-800 rounded-xl p-5 sm:p-6 shadow-md mb-6 transition-all hover:border-zinc-600 group relative">
+    
+    <!-- Title + time -->
+    <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 mb-4">
+      <a href="{% url 'post_detail' post.pk post.slug %}" 
+         class="text-xl sm:text-2xl font-semibold text-zinc-100 group-hover:text-blue-400 transition-colors line-clamp-2">
+        {{ post.title }}
+      </a>
+      <div class="text-right text-sm text-zinc-500 whitespace-nowrap">
+        {{ post.created_at|timesince }} ago
+        {% if post.updated_at != post.created_by.created_at %}
+          <span class="block text-xs italic">edited</span>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Summary -->
+    <div class="mb-5">
+      <a href="{% url 'post_detail' post.pk post.slug %}" 
+         class="text-base sm:text-lg text-zinc-400 leading-relaxed line-clamp-3 sm:line-clamp-4 hover:text-zinc-200 transition-colors">
+        {{ post.summary|truncatewords:80 }}
+      </a>
+    </div>
+
+    <!-- Author + tags + actions row -->
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-5 text-sm">
+      <!-- Left: author + tags -->
+      <div class="flex flex-wrap items-center gap-4">
+        <a href="{% url 'public_profile' post.created_by.profile_slug %}">
+          <img
+            src="{% if post.created_by.avatar %}{{ post.created_by.avatar.url }}{% elif post.created_by.avatar_url %}{{ post.created_by.avatar_url }}{% else %}https://i.pinimg.com/1200x/2b/87/2b/2b872b6b404b61fba3f2b67569b07801.jpg{% endif %}"
+            class="w-10 h-10 sm:w-11 sm:h-11 rounded-full border border-zinc-700 object-cover flex-shrink-0"
+            alt="{{ post.created_by.username }}"
+          />
+        </a>
+
+        <div class="min-w-0">
+          <div class="flex items-center gap-2">
+            <a href="{% url 'public_profile' post.created_by.profile_slug %}"
+               class="font-medium text-zinc-200 hover:text-blue-400 transition-colors truncate max-w-[180px] sm:max-w-none">
+              {{ post.created_by.username }}
+            </a>
+            {% if post.created_by.is_verified %}
+              <i data-lucide="gem" class="w-4 h-4 text-green-500 flex-shrink-0"></i>
+            {% endif %}
+          </div>
+          <p class="text-xs text-zinc-500 truncate max-w-[220px] sm:max-w-none">
+            {{ post.created_by.works_at|default:"Member" }}
+          </p>
+        </div>
+
+        <!-- Tags – hidden on very small screens if too many -->
+        <div class="hidden xs:flex flex-wrap gap-2 mt-1 sm:mt-0">
+          {% for post_tag in post.post_tags.all|slice:":4" %}
+            <span class="px-2.5 py-1 text-xs bg-zinc-900 border border-zinc-800 rounded-full text-zinc-400">
+              {{ post_tag.tag.name }}
+            </span>
+          {% endfor %}
+        </div>
+      </div>
+
+      <!-- Right: stats / actions -->
+      <div class="flex items-center justify-end sm:justify-normal gap-5 sm:gap-6 text-zinc-400">
+        <!-- Likes -->
+        <form action="{% url 'post_like' post.id %}" method="POST" class="inline">
+          {% csrf_token %}
+          <button type="submit" class="flex items-center gap-1.5 hover:text-blue-400 transition-colors active:scale-95">
+            <i data-lucide="thumbs-up" class="w-5 h-5 {% if post.user_reaction == 'LIKE' %}fill-current text-blue-500{% endif %}"></i>
+            <span class="tabular-nums text-base">{{ post.likes_count|default:0 }}</span>
+          </button>
+        </form>
+
+        <!-- Dislikes -->
+        <form action="{% url 'post_dislike' post.id %}" method="POST" class="inline">
+          {% csrf_token %}
+          <button type="submit" class="flex items-center gap-1.5 hover:text-red-400 transition-colors active:scale-95">
+            <i data-lucide="thumbs-down" class="w-5 h-5 {% if post.user_reaction == 'DISLIKE' %}fill-current text-red-500{% endif %}"></i>
+            <span class="tabular-nums text-base">{{ post.dislikes_count|default:0 }}</span>
+          </button>
+        </form>
+
+        <!-- Favourites -->
+        <form action="{% url 'post_favourite' post.id %}" method="POST" class="inline">
+          {% csrf_token %}
+          <button type="submit" class="flex items-center gap-1.5 hover:text-pink-400 transition-colors active:scale-95">
+            {% if post.is_favourited_by_user %}
+              <i data-lucide="heart" class="w-5 h-5 text-pink-500 fill-current"></i>
+            {% else %}
+              <i data-lucide="heart" class="w-5 h-5"></i>
+            {% endif %}
+            <span class="tabular-nums text-base">{{ post.favourited_by.count|default:0 }}</span>
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Status badge – bottom right on mobile, near actions on desktop -->
+     <div class="mt-8 border-t border-slate-700/50"></div>
+    <div class="mt-6 flex flex-wrap items-center justify-center gap-3 sm:gap-4">
+  <!-- Edit Button -->
+  <a href="{% url 'post_edit' post.pk post.slug %}" 
+     class="inline-flex items-center px-4 py-1.5 text-xs font-medium rounded-full bg-blue-950 text-blue-300 border border-blue-800/50 hover:bg-blue-900 transition">
+    Edit
+  </a>
+
+  <!-- Status Badge -->
+  <span class="inline-flex items-center px-4 py-1.5 text-xs font-medium rounded-full {% if post.status == 'APPROVED' %}bg-emerald-950 text-emerald-300 border border-emerald-800/50{% elif post.status == 'PENDING' %}bg-amber-950 text-amber-300 border border-amber-800/50{% else %}bg-red-950 text-red-300 border border-red-800/50{% endif %}">
+    {{ post.status }}
+  </span>
+
+  <!-- Delete Form (styled as button) -->
+  <form method="post" action="{% url 'post_delete' post.pk post.slug %}" onsubmit="return confirm('Permanently delete this post?');" class="inline">
+    {% csrf_token %}
+    <button type="submit" 
+            class="inline-flex cursor-pointer items-center px-4 py-1.5 text-xs font-medium rounded-full bg-red-950 text-red-300 border border-red-800/50 hover:bg-red-900 transition">
+      Delete
+    </button>
+  </form>
+</div>
+
+    <!-- Rejection Note – only shown when status is REJECTED and reason exists -->
+    {% if post.status == 'REJECTED' and post.rejection_reason %}
+      <div class="mt-5 p-4 bg-red-950/40 border border-red-800/60 rounded-xl text-sm text-red-200/90">
+        <div class="flex items-start gap-3">
+          <i data-lucide="alert-triangle" class="w-5 h-5 text-red-400 mt-0.5 flex-shrink-0"></i>
+          <div>
+            <p class="font-semibold text-red-300 mb-1">Rejection Reason:</p>
+            <p class="leading-relaxed">{{ post.rejection_reason|linebreaks }}</p>
+          </div>
+        </div>
+      </div>
+    {% endif %}
+
+  </div>
+{% empty %}
+  <div class="py-16 text-center text-zinc-500 border border-dashed border-zinc-800 rounded-xl">
+    <i data-lucide="file-text" class="w-12 h-12 mx-auto mb-4 opacity-60"></i>
+    <p class="text-lg">No posts found in this category.</p>
+  </div>
+{% endfor %} {% else %}
+              <div class="text-center py-16 text-zinc-500">
+                <i
+                  data-lucide="file-text"
+                  class="w-16 h-16 mx-auto mb-4 opacity-50"
+                ></i>
+                <p class="text-lg">No posts found in this category.</p>
+              </div>
+              {% endif %}
+            </div>
+
+            {% endif %}
+
+
+
+         <!-- PROFILE SECTION -->
+{% if request.path == '/dashboard/profile' or request.path == '/dashboard/profile/' %}
+  <div class="mb-8 sm:mb-10">
+    <h1 class="text-3xl sm:text-4xl font-extrabold text-white">
+      Profile Settings
+    </h1>
+    <p class="mt-2 text-base sm:text-lg text-zinc-400">
+      Manage your public profile information
+    </p>
+  </div>
+
+  <div class="max-w-3xl mx-auto bg-slate-900 rounded-2xl border border-slate-800 shadow-2xl overflow-hidden">
+    <!-- Header / Avatar + Name -->
+    <div class="p-6 sm:p-8 border-b border-slate-800">
+      <div class="flex flex-col sm:flex-row sm:items-start gap-6 sm:gap-8">
+        <div class="relative flex-shrink-0 mx-auto sm:mx-0">
+          <img
+            src="{% if request.user.avatar %}{{ request.user.avatar.url }}{% elif request.user.avatar_url %}{{ request.user.avatar_url }}{% else %}https://i.pinimg.com/1200x/2b/87/2b/2b872b6b404b61fba3f2b67569b07801.jpg{% endif %}"
+            alt="{{ request.user.username }}"
+            class="w-24 h-24 sm:w-32 sm:h-32 rounded-2xl object-cover border-4 border-slate-700 shadow-xl hover:shadow-indigo-500/30 hover:scale-105 transition-all duration-300"
+          />
+          <button
+            class="absolute -bottom-2 -right-2 bg-indigo-600 hover:bg-indigo-500 text-white p-2 rounded-full shadow-lg transition-colors"
+            aria-label="Change avatar"
+          >
+            <i data-lucide="camera" class="w-5 h-5"></i>
+          </button>
+        </div>
+
+        <div class="flex-1 text-center sm:text-left">
+          <h2 class="text-2xl sm:text-3xl font-bold text-white flex items-center justify-center sm:justify-start gap-3 mb-2">
+            {{ request.user.username }}
+            {% if request.user.is_verified %}
+              <i data-lucide="gem" class="w-6 h-6 sm:w-7 sm:h-7 text-emerald-400 drop-shadow-md"></i>
+            {% else %}
+              <i data-lucide="circle" class="w-6 h-6 sm:w-7 sm:h-7 text-slate-500"></i>
+            {% endif %}
+          </h2>
+          <p class="text-base sm:text-lg text-zinc-400 mb-3">{{ request.user.email }}</p>
+          <div class="flex flex-wrap justify-center sm:justify-start gap-4 sm:gap-6 text-sm text-zinc-500">
+            <span>{{ request.user.posts.count|default:0 }} Posts</span>
+            {% if request.user.profile_slug %}
+              <span>@{{ request.user.profile_slug }}</span>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Verification Status -->
+    <div class="p-6 sm:p-8 border-b border-slate-800">
+      {% if not request.user.is_verified %}
+        <div class="flex items-start gap-4 bg-amber-950/50 border border-amber-800/50 p-5 rounded-xl">
+          <i data-lucide="alert-circle" class="w-7 h-7 sm:w-8 sm:h-8 text-amber-400 flex-shrink-0 mt-1"></i>
+          <div>
+            <p class="text-base sm:text-lg font-semibold text-amber-300 mb-1">
+              Your account isn't verified yet
+            </p>
+            
+          </div>
+        </div>
+      {% else %}
+        <div class="flex items-center justify-center gap-4 bg-emerald-950/50 border border-emerald-800/50 p-5 rounded-xl">
+          <i data-lucide="gem" class="w-7 h-7 sm:w-8 sm:h-8 text-emerald-400 flex-shrink-0 mt-1"></i>
+          <div>
+            <p class="text-base sm:text-lg font-semibold text-emerald-300 mb-1">
+              You are verified!
+            </p>
+            
+          </div>
+        </div>
+      {% endif %}
+      <div class="mt-10 pt-8 border-t border-slate-800 text-center">
+        <a
+          href="{% url 'public_profile' request.user.profile_slug %}"
+          class="inline-flex items-center gap-3 px-8 py-4 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold rounded-xl transition-colors shadow-md hover:shadow-indigo-500/30 active:scale-95"
+        >
+          <i data-lucide="external-link" class="w-5 h-5"></i>
+          View Full Profile
+        </a>
+      </div>
+    </div>
+
+    <!-- Profile Details -->
+    <div class="p-6 sm:p-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">
+        <!-- Bio -->
+        <div>
+          <h3 class="text-lg sm:text-xl font-bold text-white mb-3">Bio</h3>
+          <div class="bg-slate-800/50 border border-slate-700 rounded-xl p-5 min-h-[120px]">
+            <p class="text-zinc-300 leading-relaxed text-base">
+              {{ request.user.bio|default:"No bio set yet. Add a bio to tell others about yourself."|linebreaks }}
+            </p>
+          </div>
+        </div>
+
+        <!-- Location / Works at / Institute -->
+        <div class="space-y-6">
+          <div>
+            <h3 class="text-lg sm:text-xl font-bold text-white mb-3">Location</h3>
+            <div class="bg-slate-800/50 border border-slate-700 rounded-xl p-5">
+              <p class="text-zinc-300 text-base">
+                {{ request.user.location|default:"🌍 Earth" }}
+              </p>
+            </div>
+          </div>
+
+          <div>
+            <h3 class="text-lg sm:text-xl font-bold text-white mb-3">Works at</h3>
+            <div class="bg-slate-800/50 border border-slate-700 rounded-xl p-5">
+              <p class="text-zinc-300 text-base">
+                {{ request.user.works_at|default:"Independent Creator" }}
+              </p>
+            </div>
+          </div>
+
+          <div>
+            <h3 class="text-lg sm:text-xl font-bold text-white mb-3">Institute</h3>
+            <div class="bg-slate-800/50 border border-slate-700 rounded-xl p-5">
+              <p class="text-zinc-300 text-base">
+                {{ request.user.institute_at|default:"Self-taught" }}
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- View Public Profile Button -->
+      
+    </div>
+  </div>
+{% endif %}
+
+
+
+
+<!-- SETTINGS SECTION -->
+{% if request.path == '/dashboard/settings' or request.path == '/dashboard/settings/' %}
+  <div class="mb-8 sm:mb-10">
+    <h1 class="text-3xl sm:text-4xl font-extrabold text-white">
+      Settings & Preferences
+    </h1>
+    <p class="mt-2 text-base sm:text-lg text-zinc-400">
+      Customize your AskBook experience and manage your account
+    </p>
+  </div>
+
+  <div class="max-w-3xl mx-auto bg-slate-900 rounded-2xl border border-slate-800 shadow-2xl overflow-hidden divide-y divide-slate-800">
+    <!-- Account Information -->
+    <div class="p-6 sm:p-8">
+      <h3 class="text-xl sm:text-2xl font-bold text-white mb-6">Account Information</h3>
+      
+      <div class="space-y-6">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <label class="block text-sm font-medium text-zinc-400 mb-1">Username</label>
+            <p class="text-base sm:text-lg text-white">@{{ user.username }}</p>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-zinc-400 mb-1">Email</label>
+            <p class="text-base sm:text-lg text-white">{{ user.email }}</p>
+          </div>
+        </div>
+
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <label class="block text-sm font-medium text-zinc-400 mb-1">Profile</label>
+            <p class="text-base sm:text-lg text-indigo-400">u/{{ user.profile_slug|default:"not-set" }}</p>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-zinc-400 mb-1">Joined</label>
+            <p class="text-base sm:text-lg text-zinc-300">{{ user.date_joined|date:"M d, Y" }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Danger Zone / Delete Account -->
+    <div class="p-6 sm:p-8 bg-rose-950/30 border-t border-rose-900/50">
+      <h3 class="text-base sm:text-2xl font-bold text-rose-400 mb-4">Danger Zone</h3>
+      <p class="text-base text-rose-200/90 mb-6">
+        Deleting your account is permanent and cannot be undone. All your posts, likes, favourites, and profile data will be removed.
+      </p>
+
+      <!-- Delete Form with Confirmation -->
+      <form 
+        method="post" 
+        action="{% url 'user_settings' %}"
+        onsubmit="return confirm('Are you absolutely sure? This will permanently delete your account, all posts, and all associated data. This action CANNOT be undone.');"
+      >
+        {% csrf_token %}
+        <input type="hidden" name="action" value="delete_profile" />
+
+        <button 
+          type="submit"
+          class="w-full sm:w-auto px-8 py-4 bg-rose-700 hover:bg-rose-600 text-white font-semibold rounded-xl transition-colors shadow-md hover:shadow-rose-500/30 active:scale-95 flex items-center justify-center gap-3"
+        >
+          <i data-lucide="trash-2" class="w-5 h-5"></i>
+          Permanently Delete Account
+        </button>
+      </form>
+
+      <p class="mt-4 text-sm text-rose-300/70 text-center sm:text-left">
+        After deletion you will be logged out and redirected to the home page.
+      </p>
+    </div>
+  </div>
+{% endif %}
+
+
+
+
+          </div>
+        </main>
+      </div>
+    </div>
+
+    <script>
+      lucide.createIcons();
+
+      // Optional: auto-close mobile sidebar when clicking any link inside it
+      document.addEventListener("DOMContentLoaded", () => {
+        if (window.innerWidth < 1024) {
+          document.querySelectorAll("aside a").forEach((link) => {
+            link.addEventListener("click", () => {
+              document.getElementById("mobile-sidebar-toggle").checked = false;
+            });
+          });
+        }
+      });
+    </script>
+  </body>
+</html>

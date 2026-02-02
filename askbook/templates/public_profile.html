@@ -1,0 +1,237 @@
+{% load static tailwind_tags %}
+<!doctype html>
+<html class="dark">
+<head>
+  <title>{{ profile_user.username }} | AskBook</title>
+  {% tailwind_css %}
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+
+<body class="bg-black text-zinc-100 min-h-screen font-sans antialiased">
+
+  <div class="mx-auto w-full max-w-4xl px-4 py-6 sm:px-5 sm:py-10 lg:px-6 lg:py-12">
+
+    <!-- BACK -->
+    <a href="#" 
+   onclick="history.back(); return false;"
+      class="inline-flex items-center gap-2 text-sky-400 hover:text-sky-300 mr-2 font-medium text-sm sm:text-base mb-6 transition-colors"
+    >
+      <i data-lucide="arrow-left" class="w-5 h-5"></i>
+      Back
+    </a>
+    {% if user.is_authenticated %}
+    <a href="/dashboard" 
+        
+      class="inline-flex items-center gap-2 text-green-400 mr-2 hover:text-green-300 font-medium text-sm sm:text-base mb-6 transition-colors"
+    ><i data-lucide="layout-dashboard" class="w-5 h-5"></i>
+      Dashboard
+    </a>
+    {% endif %}
+    <a href="/feed" 
+        
+      class="inline-flex items-center gap-2 text-blue-400 hover:text-blue-300 font-medium text-sm sm:text-base mb-6 transition-colors"
+    ><i data-lucide="codesandbox" class="w-5 h-5"></i>
+      Feed
+    </a>
+
+    <!-- PROFILE HEADER -->
+    <div class="flex flex-col items-center md:items-start md:flex-row gap-6 md:gap-10 pb-10 border-b border-zinc-800/70">
+
+      <!-- Avatar -->
+      <div class="flex-shrink-0">
+        <img
+          src="{% if profile_user.avatar %}{{ profile_user.avatar.url }}{% elif profile_user.avatar_url %}{{ profile_user.avatar_url }}{% else %}https://i.pinimg.com/1200x/2b/87/2b/2b872b6b404b61fba3f2b67569b07801.jpg{% endif %}"
+          alt="{{ profile_user.username }}"
+          class="w-28 h-28 sm:w-32 sm:h-32 md:w-36 md:h-36 rounded-full object-cover border-2 border-zinc-700/80 shadow-md"
+        />
+      </div>
+
+      <!-- Info -->
+      <div class="flex-1 text-center md:text-left space-y-4">
+
+        <div class="flex items-center justify-center md:justify-start gap-2.5">
+          <h1 class="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight text-zinc-50">
+            {{ profile_user.username }}
+          </h1>
+          {% if profile_user.is_verified %}
+            <i data-lucide="gem" class="w-6 h-6 text-emerald-500 flex-shrink-0"></i>
+          {% else %}
+            <i data-lucide="circle-dashed" class="w-5 h-5 text-red-400/80 flex-shrink-0"></i>
+          {% endif %}
+        </div>
+
+        {% if profile_user.bio %}
+          <p class="text-sm sm:text-base leading-relaxed text-zinc-300 max-w-2xl mx-auto md:mx-0">
+            {{ profile_user.bio }}
+          </p>
+        {% endif %}
+
+        <!-- Meta row -->
+        <div class="flex flex-wrap justify-center md:justify-start gap-x-5 gap-y-3 text-sm text-zinc-400">
+          {% if profile_user.works_at %}
+            <div class="flex items-center gap-1.5">
+              <i data-lucide="briefcase" class="w-4 h-4"></i>
+              {{ profile_user.works_at }}
+            </div>
+          {% endif %}
+          {% if profile_user.institute_at %}
+            <div class="flex items-center gap-1.5">
+              <i data-lucide="graduation-cap" class="w-4 h-4"></i>
+              {{ profile_user.institute_at }}
+            </div>
+          {% endif %}
+          {% if profile_user.location %}
+            <div class="flex items-center gap-1.5">
+              <i data-lucide="map-pin" class="w-4 h-4"></i>
+              {{ profile_user.location }}
+            </div>
+          {% endif %}
+          {% if profile_user.date_joined %}
+            <div class="flex items-center gap-1.5 text-amber-400/90">
+              <i data-lucide="flame" class="w-4 h-4"></i>
+              Since {{ profile_user.date_joined|date:"d M Y" }}
+            </div>
+          {% endif %}
+          {% if profile_user.github_url %}
+  <a 
+    href="{{ profile_user.github_url }}" 
+    target="_blank" 
+    rel="noopener noreferrer" 
+    class="flex items-center gap-1.5 text-zinc-400 hover:text-blue-400 transition-colors"
+  >
+    <i data-lucide="github" class="w-4 h-4"></i>
+    GitHub
+  </a>
+{% endif %}
+
+{% if profile_user.linkedin_url %}
+  <a 
+    href="{{ profile_user.linkedin_url }}" 
+    target="_blank" 
+    rel="noopener noreferrer" 
+    class="flex items-center gap-1.5 text-zinc-400 hover:text-blue-400 transition-colors"
+  >
+    <i data-lucide="linkedin" class="w-4 h-4"></i>
+    LinkedIn
+  </a>
+{% endif %}
+        </div>
+
+        <div class="text-sm text-zinc-500 pt-1">
+          {{ public_posts.count }} public {{ public_posts.count|pluralize:"post,posts" }}
+        </div>
+
+        {% if profile_user.is_verified and not user.id == profile_user.id %}
+          <div class="text-sm text-emerald-400 font-medium">
+            Verified member 💎
+          </div>
+        {% endif %}
+
+        <!-- Verification status box (only for own profile) -->
+        {% if user.is_authenticated and user.id == profile_user.id %}
+          <div class="mt-5 p-4 rounded-xl border {% if public_posts.count >= 20 %}border-emerald-600/40 bg-emerald-950/30 text-emerald-300{% else %}border-dashed border-zinc-700 bg-zinc-950/70 text-zinc-400{% endif %} text-sm">
+            {% if profile_user.is_verified %}
+              <div class="font-semibold flex items-center gap-2">
+                💎 You are verified
+              </div>
+              <div class="text-xs mt-1 text-emerald-300/90">
+                {{ public_posts.count }} approved posts
+              </div>
+            {% else %}
+              <div class="font-semibold">Verification in progress</div>
+              <div class="text-xs mt-1">
+                {{ public_posts.count }} / 20 approved posts
+              </div>
+              <div class="text-xs italic mt-2 text-zinc-500">
+                Need 20 approved posts to get verified
+              </div>
+            {% endif %}
+          </div>
+        {% endif %}
+
+        <!-- Edit button -->
+        {% if user.is_authenticated and user.id == profile_user.id %}
+          <div class="mt-6">
+            <a
+              href="{% url 'user_profile_edit' profile_user.profile_slug %}"
+              class="inline-flex items-center gap-2 px-5 py-2.5 bg-zinc-900 border border-zinc-700 hover:border-zinc-600 hover:bg-zinc-800 rounded-lg text-sm font-medium transition-colors"
+            >
+              <i data-lucide="edit-3" class="w-4 h-4"></i>
+              Edit profile
+            </a>
+          </div>
+        {% endif %}
+
+      </div>
+    </div>
+
+    <!-- ================= POSTS ================= -->
+     
+    <div class="mt-8 sm:mt-12 space-y-5 sm:space-y-6">
+        <h3 class="text-purple-200">{{profile_user.username}} Posts:</h3>
+      {% for post in public_posts %}
+      <article class="group bg-zinc-950/80 border border-zinc-800/80 rounded-xl p-4 sm:p-6 hover:border-zinc-700/90 transition-all duration-200 shadow-sm hover:shadow-md">
+
+        <div class="flex flex-col gap-3">
+
+          <!-- Title + time -->
+          <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2 sm:gap-4">
+            <a
+              href="{% url 'post_detail' post.pk post.slug %}"
+              class="text-xl sm:text-2xl font-bold text-zinc-50 group-hover:text-sky-400 transition-colors line-clamp-2 sm:line-clamp-1 md:line-clamp-none leading-tight"
+            >
+              {{ post.title }}
+            </a>
+
+            <div class="text-xs sm:text-sm text-zinc-500 whitespace-nowrap mt-1 sm:mt-1.5">
+              {{ post.created_at|timesince }} ago
+              {% if post.updated_at != post.created_at %}
+                <span class="italic ml-1">• edited</span>
+              {% endif %}
+            </div>
+          </div>
+
+          <!-- Summary -->
+          <a
+            href="{% url 'post_detail' post.pk post.slug %}"
+            class="text-sm sm:text-base text-zinc-300 leading-relaxed line-clamp-3 sm:line-clamp-4 hover:text-zinc-100 transition-colors"
+          >
+            {{ post.summary|truncatewords:140 }}
+          </a>
+
+          <!-- Author line -->
+          <div class="flex items-center gap-3 mt-3 pt-3 border-t border-zinc-800/60">
+            <img
+              src="{% if profile_user.avatar %}{{ profile_user.avatar.url }}{% elif profile_user.avatar_url %}{{ profile_user.avatar_url }}{% else %}https://i.pinimg.com/1200x/2b/87/2b/2b872b6b404b61fba3f2b67569b07801.jpg{% endif %}"
+              class="w-10 h-10 rounded-full border border-zinc-700/80 object-cover flex-shrink-0"
+              alt="{{ profile_user.username }}"
+            />
+            <div>
+              <p class="text-sm font-medium text-zinc-100">
+                {{ profile_user.username }}
+              </p>
+              <p class="text-xs text-zinc-500">
+                {{ profile_user.works_at|default:"Member" }}
+              </p>
+            </div>
+          </div>
+
+        </div>
+      </article>
+      {% empty %}
+      <div class="py-16 text-center text-zinc-500 text-lg">
+        No public posts yet.
+      </div>
+      {% endfor %}
+
+    </div>
+
+  </div>
+
+  <script>
+    lucide.createIcons();
+  </script>
+</body>
+</html>
