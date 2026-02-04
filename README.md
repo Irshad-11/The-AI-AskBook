@@ -228,8 +228,9 @@ You’ve arrived at the beginning of something special. AI AskBook is young, fas
 **Irshad Hossain**
 *Software Engineering Student @ University of Frontier Technology, Bangladesh*
 
-[![Github](https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/irshad-11)
-[![LinkedIn](https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/irshad-hossain-785548323/)
+**GitHub:** [github.com/irshad-11](https://github.com/irshad-11)  
+**LinkedIn:** [linkedin.com/in/irshad-hossain-785548323](https://www.linkedin.com/in/irshad-hossain-785548323/)
 
 
-<p align="center">Thanks for being an early adopter. Let's build the best library together.</p>
+
+<p align="center">Thanks for Visiting.</p>
