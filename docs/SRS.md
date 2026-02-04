@@ -1,3 +1,6 @@
+<p align="center">
+  <img src="https://github.com/Irshad-11/Documents/blob/main/AskBook%20SRS.png?raw=true" alt="AI AskBook SRS Banner" style="max-width:800px; width:100%;">
+</p>
 
 
 # Software Requirements Specification (SRS)  
@@ -194,4 +197,49 @@ Reference: [Database Design Documentation](https://github.com/Irshad-11/The-AI-A
 #### 3.4.2 Installation
 - Deployable on Render with PostgreSQL
 - Environment variables for secrets
+
+
+### 3.5 Use Case — Prompt Submission & Moderation Flow
+
+#### 3.5.1 Use Case Description
+This use case describes how a prompt (post) is submitted, reviewed, and published within the AI AskBook platform.  
+The workflow varies based on the verification status of the submitting user and ensures content quality through admin moderation.
+
+**Primary Actor:** Registered Member  
+**Secondary Actor:** Admin  
+**Precondition:** User is authenticated  
+**Postcondition:** Prompt is either published to the public feed or returned to the user for revision
+
+
+#### 3.5.2 Use Case Flow (Post Lifecycle)
+
+```mermaid
+flowchart TD
+    A[User Submits Prompt] --> B{Is User Verified?}
+
+    B -- Yes --> C[Prompt Auto-Approved]
+    C --> D[Published to Live Feed]
+
+    B -- No --> E[Prompt Set to Pending State]
+    E --> F[Admin Reviews Prompt]
+
+    F --> G{Admin Decision}
+
+    G -- Approve --> H[Prompt Approved]
+    H --> D
+
+    G -- Reject --> I[Admin Adds Rejection Reason]
+    I --> J[Prompt Marked as Rejected]
+    J --> K[User Edits Prompt]
+    K --> A
+````
+
+
+#### 3.5.3 Notes
+
+* Verified users bypass manual moderation to reduce friction and encourage contribution.
+* Unverified users follow a controlled review loop to ensure platform quality.
+* Rejected prompts are not deleted; they remain editable, enabling iterative improvement.
+* The cycle continues until the prompt meets approval criteria and is published.
+
 
