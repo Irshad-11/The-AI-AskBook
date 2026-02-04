@@ -30,7 +30,7 @@
 
 ## Documentation
 **Want to dive deeper into the technicalities?**
-[**CLICK HERE TO READ DOCS**](https://github.com/Irshad-11/The-AI-AskBook/docs/)
+[**CLICK HERE TO READ DOCS**](https://github.com/Irshad-11/The-AI-AskBook/tree/main/docs)
 *It Includes: SRS and Database Design.*
 
 
