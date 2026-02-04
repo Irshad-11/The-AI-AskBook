@@ -66,7 +66,161 @@ You’ve arrived at the beginning of something special. AI AskBook is young, fas
 
 
 ## Screenshots
-*(Will added later)*
+
+<p align="center">
+  <i>A visual walkthrough of The AI AskBook experience — from landing to dashboards.</i>
+</p>
+
+<br>
+
+### 🌐 Landing Pages
+
+<table>
+  <tr>
+    <td align="center" width="50%">
+      <img src="https://github.com/Irshad-11/Documents/blob/main/Home-1-AI-AskBook.png?raw=true" width="100%" alt="Landing Page 1"/>
+      <br><br><b>Landing Page — Hero Section</b>
+    </td>
+    <td align="center" width="50%">
+      <img src="https://github.com/Irshad-11/Documents/blob/main/Home-2-AI-AskBook.png?raw=true" width="100%" alt="Landing Page 2"/>
+      <br><br><b>Landing Page — Features Overview</b>
+    </td>
+  </tr>
+</table>
+
+<br>
+
+<table>
+  <tr>
+    <td align="center" width="50%">
+      <img src="https://github.com/Irshad-11/Documents/blob/main/Home-3-AI-AskBook.png?raw=true" width="100%" alt="Landing Page 3"/>
+      <br><br><b>Landing Page — Platform Highlights</b>
+    </td>
+    <td align="center" width="50%">
+      <img src="https://github.com/Irshad-11/Documents/blob/main/Home-4-AI-AskBook.png?raw=true" width="100%" alt="Landing Page 4"/>
+      <br><br><b>Landing Page — Community & Value</b>
+    </td>
+  </tr>
+</table>
+
+<br>
+
+<table>
+  <tr>
+    <td align="center">
+      <img src="https://github.com/Irshad-11/Documents/blob/main/Home-5-AI-Askbook.png?raw=true" width="100%" alt="Landing Page 5"/>
+      <br><br><b>Landing Page — Featured Post</b>
+    </td>
+  </tr>
+</table>
+
+---
+
+### 🔐 Authentication
+
+<table>
+  <tr>
+    <td align="center">
+      <img src="https://github.com/Irshad-11/Documents/blob/main/auth-AI-AskBook.png?raw=true" width="100%" alt="Authentication Page"/>
+      <br><br><b>Authentication — Login & Registration</b>
+    </td>
+  </tr>
+</table>
+
+---
+
+### 🛠️ Admin Dashboard
+
+<table>
+  <tr>
+    <td align="center" width="50%">
+      <img src="https://github.com/Irshad-11/Documents/blob/main/admin-dashboard-AI-AskBook.png?raw=true" width="100%" alt="Admin Dashboard"/>
+      <br><br><b>Admin Dashboard — Overview</b>
+    </td>
+    <td align="center" width="50%">
+      <img src="https://github.com/Irshad-11/Documents/blob/main/admin-manage-user-AI-AskBook.png?raw=true" width="100%" alt="Admin Manage Users"/>
+      <br><br><b>Admin Dashboard — Manage Users</b>
+    </td>
+  </tr>
+</table>
+
+---
+
+### 👤 User Dashboard
+
+<table>
+  <tr>
+    <td align="center" width="50%">
+      <img src="https://github.com/Irshad-11/Documents/blob/main/user-dashboard-AI-AskBook.png?raw=true" width="100%" alt="User Dashboard"/>
+      <br><br><b>User Dashboard — Overview</b>
+    </td>
+    <td align="center" width="50%">
+      <img src="https://github.com/Irshad-11/Documents/blob/main/dash-profile-AI-AskBook.png?raw=true" width="100%" alt="Edit Profile"/>
+      <br><br><b>User Dashboard — Edit Profile</b>
+    </td>
+  </tr>
+</table>
+
+<br>
+
+<table>
+  <tr>
+    <td align="center" width="50%">
+      <img src="https://github.com/Irshad-11/Documents/blob/main/manage-post-AI-AskBook.png?raw=true" width="100%" alt="Manage Posts"/>
+      <br><br><b>User Dashboard — Manage Posts</b>
+    </td>
+    <td align="center" width="50%">
+      <img src="https://github.com/Irshad-11/Documents/blob/main/settings-AI-AskBook.png?raw=true" width="100%" alt="User Settings"/>
+      <br><br><b>User Dashboard — Settings</b>
+    </td>
+  </tr>
+</table>
+
+---
+
+### 📰 Prompt Feed
+
+<table>
+  <tr>
+    <td align="center" width="50%">
+      <img src="https://github.com/Irshad-11/Documents/blob/main/feed-AI-AskBook.png?raw=true" width="100%" alt="Feed"/>
+      <br><br><b>Prompt Feed — Discover Content</b>
+    </td>
+    <td align="center" width="50%">
+      <img src="https://github.com/Irshad-11/Documents/blob/main/feed-like-AI-AskBook.png?raw=true" width="100%" alt="Feed Interaction"/>
+      <br><br><b>Prompt Feed — Likes & Interaction</b>
+    </td>
+  </tr>
+</table>
+
+---
+
+### 🌍 Public Pages
+
+<table>
+  <tr>
+    <td align="center" width="50%">
+      <img src="https://github.com/Irshad-11/Documents/blob/main/main-profile-AI-AskBook.png?raw=true" width="100%" alt="Public Profile"/>
+      <br><br><b>Public Profile</b>
+    </td>
+    <td align="center" width="50%">
+      <img src="https://github.com/Irshad-11/Documents/blob/main/post-detial-1-AI-AskBook.png?raw=true" width="100%" alt="Post Details"/>
+      <br><br><b>Public Post — Details View</b>
+    </td>
+  </tr>
+</table>
+
+<br>
+
+<table>
+  <tr>
+    <td align="center">
+      <img src="https://github.com/Irshad-11/Documents/blob/main/post-detail-2-AI-AskBook.png?raw=true" width="100%" alt="Post Details Alternate"/>
+      <br><br><b>Public Post — Alternate Layout</b>
+    </td>
+  </tr>
+</table>
+
 
 
 
@@ -74,8 +228,9 @@ You’ve arrived at the beginning of something special. AI AskBook is young, fas
 **Irshad Hossain**
 *Software Engineering Student @ University of Frontier Technology, Bangladesh*
 
-[![Github](https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/irshad-11)
-[![LinkedIn](https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/irshad-hossain-785548323/)
+**GitHub:** [github.com/irshad-11](https://github.com/irshad-11)  
+**LinkedIn:** [linkedin.com/in/irshad-hossain-785548323](https://www.linkedin.com/in/irshad-hossain-785548323/)
 
 
-<p align="center">Thanks for being an early adopter. Let's build the best library together.</p>
+
+<p align="center">Thanks for Visiting.</p>
