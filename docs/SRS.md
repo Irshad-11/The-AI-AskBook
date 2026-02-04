@@ -38,7 +38,7 @@ AI AskBook provides:
 
 ### 1.4 References
 - Project README: [GitHub Repository](https://github.com/Irshad-11/The-AI-AskBook)
-- Database Design: [Technical Documentation](https://github.com/Irshad-11/The-AI-AskBook/docs/)
+- Database Design: [Technical Documentation](https://github.com/Irshad-11/The-AI-AskBook/blob/main/docs/DB%20Design.md)
 
 ### 1.5 Overview
 Section 2 provides system perspective and constraints. Section 3 details functional and non-functional requirements using "The system shall..." format.
