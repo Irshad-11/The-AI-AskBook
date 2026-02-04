@@ -1,5 +1,10 @@
+<p align="center">
+  <img src="https://github.com/Irshad-11/Documents/blob/main/AskBook%20DBD.png?raw=true" alt="AI AskBook SRS Banner" style="max-width:800px; width:100%;">
+</p>
+
+
 # AI AskBook Database Design Documentation
-**IEEE Std 829-2008 Compliant**  
+
 **Version 1.0**  
 **Date: February 3, 2026**  
 **Prepared by: Irshad Hossain**
@@ -154,7 +159,6 @@ erDiagram
 
 ### 4.3 Core Relationships
 
-**Mermaid Relationship Diagram:**
 
 ```mermaid
 graph TB
