@@ -6,7 +6,6 @@
 # Software Requirements Specification (SRS)  
 **AI AskBook - Prompt Sharing Platform**  
 **Version 1.0**  
-**IEEE Std 830-1998 Compliant**  
 **Prepared by: Irshad Hossain**  
 **Date: February 3, 2026**
 
@@ -192,7 +191,7 @@ None.
 ### 3.4 Other Requirements
 
 #### 3.4.1 Database
-Reference: [Database Design Documentation](https://github.com/Irshad-11/The-AI-AskBook/docs/)
+Reference: [Database Design Documentation](https://github.com/Irshad-11/The-AI-AskBook/blob/main/docs/DB%20Design.md)
 
 #### 3.4.2 Installation
 - Deployable on Render with PostgreSQL
